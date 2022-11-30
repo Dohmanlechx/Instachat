@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "836589714155",
+    "firebase_url": "https://instachat-3a309-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "instachat-3a309",
+    "storage_bucket": "instachat-3a309.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836589714155:android:b077dc3209f4add35c1cae",
+        "android_client_info": {
+          "package_name": "com.example.instachat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836589714155-ehdu98hfge6t6offv6gtob8hhhqbb5kb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAx89pKPdcI_5xGkksKhGB-T3CV5IMgMg0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836589714155-ehdu98hfge6t6offv6gtob8hhhqbb5kb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
