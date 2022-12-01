@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final ref = database.ref('chats');
 
   String _message = '';
+  bool host = true;
 
   late final ScrollController _scrollController;
   late final TextEditingController _controller;
@@ -49,9 +50,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final ref = database.ref('chats');
 
-    final ref2 = database.ref('chats/message');
+    final refMessageFromFalse = database.ref('chats/messageFromfalse');
+    final refMessageFromTrue = database.ref('chats/messageFromtrue');
 
-    ref2.onValue.listen((event) {
+    refMessageFromFalse.onValue.listen((event) {
+      if (!host) return;
+      setState(() {
+        var next = event.snapshot.value as String?;
+        _message = next ?? '';
+      });
+    });
+
+    refMessageFromTrue.onValue.listen((event) {
+      if (host) return;
       setState(() {
         var next = event.snapshot.value as String?;
         _message = next ?? '';
@@ -63,7 +74,9 @@ class _MyHomePageState extends State<MyHomePage> {
     _controller = TextEditingController()
       ..addListener(() async {
         var value = _controller.text;
-        await ref.set({'message': value});
+        final key = 'messageFrom${(host).toString()}';
+        print(key);
+        await ref.update({key: value});
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
   }
@@ -75,6 +88,35 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  List<Widget> _viewForHost() {
+    return [
+      Expanded(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            child: Text(
+              _message,
+              textAlign: TextAlign.start,
+              style: Theme.of(context).textTheme.headline4,
+            ),
+          ),
+        ),
+      ),
+      Expanded(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            controller: _controller,
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            toolbarOptions: const ToolbarOptions(selectAll: false),
+          ),
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,29 +124,24 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                child: Text(
-                  _message,
-                  style: Theme.of(context).textTheme.headline4,
-                ),
+          ..._viewForHost(),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                host = !host;
+              });
+            },
+            child: Center(
+              child: Text(
+                host.toString(),
+                style: const TextStyle(fontSize: 30),
               ),
             ),
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _controller,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                toolbarOptions: const ToolbarOptions(selectAll: false),
-              ),
-            ),
+          const SizedBox(
+            height: 30,
           ),
         ],
       ),
