@@ -62,7 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         var next = event.snapshot.value as String?;
         _message = next ?? '';
+        chat = chat.copyWith(messageFromHost: _message);
       });
+
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
 
     refMessageFromGuest.onValue.listen((event) {
@@ -71,7 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         var next = event.snapshot.value as String?;
         _message = next ?? '';
+        chat = chat.copyWith(messageFromGuest: _message);
       });
+
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
 
     _scrollController = ScrollController();
@@ -103,31 +109,40 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> _viewForHost() {
     return [
-      Text('Your friend', style: ICTheme.typefaces.bold30),
+      Text('Your friend', style: ICTheme.typefaces.headline),
       Expanded(
         child: Container(
           width: double.infinity,
-          color: Colors.grey.withOpacity(0.2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.grey.withOpacity(0.2),
+          ),
           child: SingleChildScrollView(
             controller: _scrollController,
             child: Text(
               _message,
               textAlign: TextAlign.start,
-              style: Theme.of(context).textTheme.headline4,
+              style: ICTheme.typefaces.body,
             ),
           ),
         ),
       ),
-      Text('You', style: ICTheme.typefaces.bold30),
+      Padding(
+        padding: EdgeInsets.only(top: ICTheme.paddings.p16),
+        child: Text('You', style: ICTheme.typefaces.headline),
+      ),
       Expanded(
         child: Container(
           width: double.infinity,
-          color: Colors.blueGrey.withOpacity(0.2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.blueGrey.withOpacity(0.2),
+          ),
           child: TextField(
             controller: _controller,
             keyboardType: TextInputType.multiline,
             maxLines: null,
-            toolbarOptions: const ToolbarOptions(selectAll: false),
+            style: ICTheme.typefaces.body,
             decoration: null,
           ),
         ),
@@ -138,9 +153,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(ICTheme.paddings.p16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
