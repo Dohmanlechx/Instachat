@@ -1,15 +1,20 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/firebase_options.dart';
-import 'package:instachat/models/chat.dart';
+import 'package:instachat/providers/chat.dart';
 import 'package:instachat/theme/theme.dart';
 import 'package:instachat/util/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+
+  runApp(
+    const ProviderScope(child: MyApp()),
+  );
 }
 
 final database = FirebaseDatabase.instance;
@@ -22,36 +27,34 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: Constants.appName,
       theme: ThemeData(primarySwatch: Colors.teal),
-      home: const MyHomePage(title: Constants.appName),
+      home: const SafeArea(
+        child: MyHomePage(title: Constants.appName),
+      ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final ref = database.ref('chats');
-
+class _MyHomePageState extends ConsumerState<MyHomePage> {
   String _message = '';
   bool host = true;
 
   late final ScrollController _scrollController;
   late final TextEditingController _controller;
 
-  var chat = Chat(id: '1337');
-
   @override
   void initState() {
     super.initState();
 
-    final ref = database.ref('chats');
+    final databaseRef = database.ref('chats');
 
     final refMessageFromHost = database.ref('chats/messageFromHost');
     final refMessageFromGuest = database.ref('chats/messageFromGuest');
@@ -62,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         var next = event.snapshot.value as String?;
         _message = next ?? '';
-        chat = chat.copyWith(messageFromHost: _message);
+        ref.read(chatProvider.notifier).updateHostMessage(_message);
       });
 
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -74,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         var next = event.snapshot.value as String?;
         _message = next ?? '';
-        chat = chat.copyWith(messageFromGuest: _message);
+        ref.read(chatProvider.notifier).updateGuestMessage(_message);
       });
 
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -87,15 +90,14 @@ class _MyHomePageState extends State<MyHomePage> {
         var value = _controller.text;
 
         if (host) {
-          chat = chat.copyWith(messageFromHost: value);
+          ref.read(chatProvider.notifier).updateHostMessage(value);
         } else {
-          chat = chat.copyWith(messageFromGuest: value);
+          ref.read(chatProvider.notifier).updateGuestMessage(value);
         }
 
-        print(chat);
+        final chat = ref.read(chatProvider);
 
-        await ref.update(chat.toJson());
-        //await ref.update({key: value});
+        await databaseRef.update(chat.toJson());
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
   }
