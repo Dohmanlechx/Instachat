@@ -50,11 +50,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   late final ScrollController _scrollController;
   late final TextEditingController _controller;
 
+  DatabaseReference get databaseRef {
+    final chat = ref.read(chatProvider);
+    return database.ref('chats/${chat?.id}');
+  }
+
   @override
   void initState() {
     super.initState();
-
-    final databaseRef = database.ref('chats');
 
     final refMessageFromHost = database.ref('chats/messageFromHost');
     final refMessageFromGuest = database.ref('chats/messageFromGuest');
@@ -97,7 +100,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
         final chat = ref.read(chatProvider);
 
-        await databaseRef.update(chat.toJson());
+        await databaseRef.update(chat!.toJson());
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
   }
@@ -152,33 +155,48 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     ];
   }
 
+  Widget _start() {
+    return TextButton(
+      onPressed: () {
+        ref.read(chatProvider.notifier).init();
+      },
+      child: const Text('Start chat'),
+    );
+  }
+
+  Widget _chat() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        ..._viewForHost(),
+        TextButton(
+          onPressed: () {
+            setState(() {
+              host = !host;
+            });
+          },
+          child: Center(
+            child: Text(
+              host ? 'Host' : 'Guest',
+              style: const TextStyle(fontSize: 30),
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final chat = ref.watch(chatProvider);
+
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(ICTheme.paddings.p16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            ..._viewForHost(),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  host = !host;
-                });
-              },
-              child: Center(
-                child: Text(
-                  host ? 'Host' : 'Guest',
-                  style: const TextStyle(fontSize: 30),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-          ],
-        ),
+        child: chat == null ? _start() : _chat(),
       ),
     );
   }
