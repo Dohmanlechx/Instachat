@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:instachat/firebase_options.dart';
 import 'package:instachat/models/chat.dart';
+import 'package:instachat/theme/theme.dart';
+import 'package:instachat/util/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,11 +20,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: Constants.appName,
+      theme: ThemeData(primarySwatch: Colors.teal),
+      home: const MyHomePage(title: Constants.appName),
     );
   }
 }
@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final refMessageFromGuest = database.ref('chats/messageFromGuest');
 
     refMessageFromHost.onValue.listen((event) {
-      if (!host) return;
+      if (host) return;
 
       setState(() {
         var next = event.snapshot.value as String?;
@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     refMessageFromGuest.onValue.listen((event) {
-      if (host) return;
+      if (!host) return;
 
       setState(() {
         var next = event.snapshot.value as String?;
@@ -79,8 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _controller = TextEditingController()
       ..addListener(() async {
         var value = _controller.text;
-
-        final key = 'messageFrom${(host).toString()}';
 
         if (host) {
           chat = chat.copyWith(messageFromHost: value);
@@ -105,9 +103,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> _viewForHost() {
     return [
+      Text('Your friend', style: ICTheme.typefaces.bold30),
       Expanded(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+        child: Container(
+          width: double.infinity,
+          color: Colors.grey.withOpacity(0.2),
           child: SingleChildScrollView(
             controller: _scrollController,
             child: Text(
@@ -118,14 +118,17 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
+      Text('You', style: ICTheme.typefaces.bold30),
       Expanded(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+        child: Container(
+          width: double.infinity,
+          color: Colors.blueGrey.withOpacity(0.2),
           child: TextField(
             controller: _controller,
             keyboardType: TextInputType.multiline,
             maxLines: null,
             toolbarOptions: const ToolbarOptions(selectAll: false),
+            decoration: null,
           ),
         ),
       ),
@@ -135,30 +138,31 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          ..._viewForHost(),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                host = !host;
-              });
-            },
-            child: Center(
-              child: Text(
-                host ? 'Host' : 'Guest',
-                style: const TextStyle(fontSize: 30),
+      appBar: AppBar(title: Text(widget.title)),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            ..._viewForHost(),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  host = !host;
+                });
+              },
+              child: Center(
+                child: Text(
+                  host ? 'Host' : 'Guest',
+                  style: const TextStyle(fontSize: 30),
+                ),
               ),
             ),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-        ],
+            const SizedBox(
+              height: 30,
+            ),
+          ],
+        ),
       ),
     );
   }
