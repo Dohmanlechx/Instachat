@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:instachat/firebase_options.dart';
+import 'package:instachat/models/chat.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,25 +45,29 @@ class _MyHomePageState extends State<MyHomePage> {
   late final ScrollController _scrollController;
   late final TextEditingController _controller;
 
+  var chat = Chat(id: '1337');
+
   @override
   void initState() {
     super.initState();
 
     final ref = database.ref('chats');
 
-    final refMessageFromFalse = database.ref('chats/messageFromfalse');
-    final refMessageFromTrue = database.ref('chats/messageFromtrue');
+    final refMessageFromHost = database.ref('chats/messageFromHost');
+    final refMessageFromGuest = database.ref('chats/messageFromGuest');
 
-    refMessageFromFalse.onValue.listen((event) {
+    refMessageFromHost.onValue.listen((event) {
       if (!host) return;
+
       setState(() {
         var next = event.snapshot.value as String?;
         _message = next ?? '';
       });
     });
 
-    refMessageFromTrue.onValue.listen((event) {
+    refMessageFromGuest.onValue.listen((event) {
       if (host) return;
+
       setState(() {
         var next = event.snapshot.value as String?;
         _message = next ?? '';
@@ -74,9 +79,19 @@ class _MyHomePageState extends State<MyHomePage> {
     _controller = TextEditingController()
       ..addListener(() async {
         var value = _controller.text;
+
         final key = 'messageFrom${(host).toString()}';
-        print(key);
-        await ref.update({key: value});
+
+        if (host) {
+          chat = chat.copyWith(messageFromHost: value);
+        } else {
+          chat = chat.copyWith(messageFromGuest: value);
+        }
+
+        print(chat);
+
+        await ref.update(chat.toJson());
+        //await ref.update({key: value});
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
   }
@@ -135,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             child: Center(
               child: Text(
-                host.toString(),
+                host ? 'Host' : 'Guest',
                 style: const TextStyle(fontSize: 30),
               ),
             ),
