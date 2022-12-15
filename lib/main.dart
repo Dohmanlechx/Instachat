@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/firebase_options.dart';
 import 'package:instachat/providers/chat.dart';
-import 'package:instachat/theme/theme.dart';
+import 'package:instachat/theme/ui.dart';
 import 'package:instachat/util/constants.dart';
 
 void main() async {
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: Constants.appName,
-      theme: ThemeData(primarySwatch: Colors.teal),
+      theme: UI.theme,
       home: const SafeArea(
         child: MyHomePage(title: Constants.appName),
       ),
@@ -55,14 +55,21 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     return database.ref('chats/${chat?.id}');
   }
 
+  DatabaseReference get messageFromHostRef {
+    final chat = ref.read(chatProvider);
+    return database.ref('chats/hardcodedId/messageFromHost');
+  }
+
+  DatabaseReference get messageFromGuestRef {
+    final chat = ref.read(chatProvider);
+    return database.ref('chats/hardcodedId/messageFromGuest');
+  }
+
   @override
   void initState() {
     super.initState();
 
-    final refMessageFromHost = database.ref('chats/messageFromHost');
-    final refMessageFromGuest = database.ref('chats/messageFromGuest');
-
-    refMessageFromHost.onValue.listen((event) {
+    messageFromHostRef.onValue.listen((event) {
       if (host) return;
 
       setState(() {
@@ -74,7 +81,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
 
-    refMessageFromGuest.onValue.listen((event) {
+    messageFromGuestRef.onValue.listen((event) {
       if (!host) return;
 
       setState(() {
@@ -114,7 +121,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   List<Widget> _viewForHost() {
     return [
-      Text('Your friend', style: ICTheme.typefaces.headline),
+      Text('Your friend', style: Theme.of(context).textTheme.headline4),
       Expanded(
         child: Container(
           width: double.infinity,
@@ -127,14 +134,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             child: Text(
               _message,
               textAlign: TextAlign.start,
-              style: ICTheme.typefaces.body,
+              style: Theme.of(context).textTheme.headline5,
             ),
           ),
         ),
       ),
       Padding(
-        padding: EdgeInsets.only(top: ICTheme.paddings.p16),
-        child: Text('You', style: ICTheme.typefaces.headline),
+        padding: const EdgeInsets.only(top: UI.p16),
+        child: Text('You', style: Theme.of(context).textTheme.headline4),
       ),
       Expanded(
         child: Container(
@@ -147,7 +154,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             controller: _controller,
             keyboardType: TextInputType.multiline,
             maxLines: null,
-            style: ICTheme.typefaces.body,
+            style: Theme.of(context).textTheme.headline5,
             decoration: null,
           ),
         ),
@@ -156,11 +163,49 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 
   Widget _start() {
-    return TextButton(
-      onPressed: () {
-        ref.read(chatProvider.notifier).init();
-      },
-      child: const Text('Start chat'),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTap: ref.read(chatProvider.notifier).init,
+          child: Center(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.teal.withOpacity(0.2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(UI.p16),
+                child: Text('Start Chat',
+                    style: Theme.of(context).textTheme.headline3),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: UI.p16),
+        GestureDetector(
+          onTap: () async {
+            ref
+                .read(chatProvider.notifier)
+                .join('hardcodedId')
+                .catchError((error) => print(error));
+          },
+          child: Center(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.teal.withOpacity(0.2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(UI.p16),
+                child: Text('Join chat',
+                    style: Theme.of(context).textTheme.headline3),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -195,7 +240,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(ICTheme.paddings.p16),
+        padding: const EdgeInsets.all(UI.p16),
         child: chat == null ? _start() : _chat(),
       ),
     );

@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/chat.dart';
 import 'package:instachat/providers/firebase.dart';
-import 'package:uuid/uuid.dart';
 
 final chatProvider = StateNotifierProvider<ChatNotifier, Chat?>((ref) {
   return ChatNotifier(ref);
@@ -15,12 +14,25 @@ class ChatNotifier extends StateNotifier<Chat?> {
   String get databasePath => 'chats/${state?.id}';
 
   void init() {
-    final id = const Uuid().v4();
+    const id = 'hardcodedId'; //const Uuid().v4();
     final chat = Chat(id: id);
 
     state = chat;
     final databaseRef = ref.read(firebaseProvider).ref(databasePath);
     databaseRef.update(chat.toJson());
+  }
+
+  Future<void> join(String id) async {
+    final databaseRef = ref.read(firebaseProvider).ref('chats/');
+    final event = await databaseRef.once();
+    final chat = event.snapshot.value as Map<String, dynamic>;
+
+    if (chat.containsKey(id)) {
+      final chatModel = Chat.fromJson(chat[id]);
+      state = chatModel;
+    } else {
+      return Future.error(Exception('Chat $id is not available.'));
+    }
   }
 
   void updateHostMessage(String value) {
