@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/chat.dart';
 import 'package:instachat/providers/firebase.dart';
+import 'package:instachat/words.dart';
 
 final chatProvider = StateNotifierProvider<ChatNotifier, Chat?>((ref) {
   return ChatNotifier(ref);
@@ -14,8 +15,9 @@ class ChatNotifier extends StateNotifier<Chat?> {
   String get databasePath => 'chats/${state?.id}';
 
   void init() {
-    const id = 'hardcodedId'; //const Uuid().v4();
-    final chat = Chat(id: id);
+    final words = List.of(all)..shuffle();
+    final id = words.take(3);
+    final chat = Chat(id: id.join('-'));
 
     state = chat;
     final databaseRef = ref.read(firebaseProvider).ref(databasePath);

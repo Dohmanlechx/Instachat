@@ -168,7 +168,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: ref.read(chatProvider.notifier).init,
+          onTap: () {
+            host = true;
+            ref.read(chatProvider.notifier).init();
+          },
           child: Center(
             child: Container(
               decoration: BoxDecoration(
@@ -186,6 +189,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         const SizedBox(height: UI.p16),
         GestureDetector(
           onTap: () async {
+            host = false;
             ref
                 .read(chatProvider.notifier)
                 .join('hardcodedId')
@@ -210,26 +214,20 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 
   Widget _chat() {
+    final chat = ref.watch(chatProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         ..._viewForHost(),
-        TextButton(
-          onPressed: () {
-            setState(() {
-              host = !host;
-            });
-          },
-          child: Center(
-            child: Text(
-              host ? 'Host' : 'Guest',
-              style: const TextStyle(fontSize: 30),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 30,
-        ),
+        const SizedBox(height: 30),
+        chat == null
+            ? const SizedBox()
+            : Center(
+                child: Text(
+                  'Chat ID: ${chat.id}',
+                  style: const TextStyle(fontSize: 30),
+                ),
+              ),
       ],
     );
   }
