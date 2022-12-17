@@ -23,8 +23,6 @@ void main() async {
   );
 }
 
-final database = FirebaseDatabase.instance;
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -50,34 +48,12 @@ class MyHomePage extends ConsumerStatefulWidget {
 }
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
-  final String _message = '';
   bool host = true;
   String? _chatId;
 
   late final ScrollController _scrollController;
   late final TextEditingController _controller;
   late final TextEditingController _idController;
-
-  DatabaseReference get databaseRef {
-    final chat = ref.read(pChatById(_chatId)).valueOrNull;
-    return database.ref('chats/${chat?.id}');
-  }
-
-  DatabaseReference? get messageFromHostRef {
-    final chat = ref.read(pChatById(_chatId)).valueOrNull;
-    if (chat == null) {
-      return null;
-    }
-    return database.ref('chats/${chat.id}/messageFromHost');
-  }
-
-  DatabaseReference? get messageFromGuestRef {
-    final chat = ref.read(pChatById(_chatId)).valueOrNull;
-    if (chat == null) {
-      return null;
-    }
-    return database.ref('chats/${chat.id}/messageFromGuest');
-  }
 
   @override
   void initState() {
@@ -93,19 +69,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           await ref
               .read(chatRepositoryProvider)
               .updateHostMessage(_chatId!, message: value);
-          // ref.read(chatProvider.notifier).updateHostMessage(value);
         } else {
           await ref
               .read(chatRepositoryProvider)
               .updateGuestMessage(_chatId!, message: value);
-          // ref.read(chatProvider.notifier).updateGuestMessage(value);
         }
-
-        // final chat = ref.read(pChatById(_chatId)).valueOrNull;
-
-        // if (chat != null) {
-        //   await databaseRef.update(chat.toJson());
-        // }
 
         if (!_scrollController.hasClients) return;
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);

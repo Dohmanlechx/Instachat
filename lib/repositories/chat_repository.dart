@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/chat.dart';
 import 'package:instachat/repositories/guarded_repository.dart';
-import 'package:instachat/util/extensions.dart';
+import 'package:instachat/util/extensions/ref.dart';
 import 'package:instachat/words.dart' as file;
 
 final chatRepositoryProvider = Provider<_ChatRepository>(_ChatRepository.new);

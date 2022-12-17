@@ -10,5 +10,5 @@ final pAllChats = FutureProvider<List<Chat>>((ref) async {
 final pChatById =
     FutureProvider.family.autoDispose<Chat?, String?>((ref, chatId) async {
   final repo = ref.watch(chatRepositoryProvider);
-  return chatId == null ? null : await repo.fetch(chatId);
+  return chatId == null || chatId.isEmpty ? null : await repo.fetch(chatId);
 });
