@@ -10,14 +10,31 @@ class _ChatRepository {
 
   final Ref ref;
 
-  Future<List<Chat>> fetch() async {
+  Future<List<Chat>> fetchAll() async {
     final chats = <Chat>[];
 
     await guardedFuture(() async {
-      final chatData = await ref.getDatabaseValue('chats/');
-      chats.addAll(chatData.values.map((data) => Chat.fromJson(data)));
+      final chatsData = await ref.getDatabaseValue('chats/');
+
+      if (chatsData != null) {
+        chats.addAll(chatsData.values.map((data) => Chat.fromJson(data)));
+      }
     });
 
     return chats;
+  }
+
+  Future<Chat?> fetch(String id) async {
+    Chat? chat;
+
+    await guardedFuture(() async {
+      final chatData = await ref.getDatabaseValue('chats/$id');
+
+      if (chatData != null) {
+        chat = Chat.fromJson(chatData);
+      }
+    });
+
+    return chat;
   }
 }

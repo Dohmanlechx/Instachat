@@ -6,7 +6,13 @@ import 'package:instachat/words.dart';
 
 final pvrChats = FutureProvider<List<Chat>>((ref) async {
   final repo = ref.watch(chatRepositoryProvider);
-  return await repo.fetch();
+  return await repo.fetchAll();
+});
+
+final pvrChat =
+    FutureProvider.family.autoDispose<Chat?, String?>((ref, chatId) async {
+  final repo = ref.watch(chatRepositoryProvider);
+  return chatId == null ? null : await repo.fetch(chatId);
 });
 
 final chatProvider = StateNotifierProvider<ChatNotifier, Chat?>((ref) {

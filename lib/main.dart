@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/firebase_options.dart';
+import 'package:instachat/models/chat.dart';
 import 'package:instachat/providers/chat.dart';
 import 'package:instachat/theme/ui.dart';
 import 'package:instachat/util/constants.dart';
@@ -46,6 +47,7 @@ class MyHomePage extends ConsumerStatefulWidget {
 class _MyHomePageState extends ConsumerState<MyHomePage> {
   String _message = '';
   bool host = true;
+  String? _chatId;
 
   late final ScrollController _scrollController;
   late final TextEditingController _controller;
@@ -191,11 +193,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         const SizedBox(height: UI.p16),
         GestureDetector(
           onTap: () async {
-            host = false;
-            ref
-                .read(chatProvider.notifier)
-                .join('hardcodedId')
-                .catchError((error) => print(error));
+            setState(() {
+              _chatId = "flour-economically-skin";
+            });
+
+            // await ref
+            //     .read(chatProvider.notifier)
+            //     .join('hardcodedId')
+            //     .catchError((error) => print(error));
           },
           child: Center(
             child: Container(
@@ -215,35 +220,58 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     );
   }
 
-  Widget _chat() {
-    final chat = ref.watch(chatProvider);
+  Widget _chat(Chat chat) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         ..._viewForHost(),
         const SizedBox(height: 30),
-        chat == null
-            ? const SizedBox()
-            : Center(
-                child: Text(
-                  'Chat ID: ${chat.id}',
-                  style: const TextStyle(fontSize: 30),
-                ),
-              ),
+        Center(
+          child: Text(
+            'Chat ID: ${chat.id}',
+            style: const TextStyle(fontSize: 30),
+          ),
+        ),
+        const SizedBox(height: 30),
+        GestureDetector(
+          onTap: () => setState(() {
+            _chatId = null;
+          }),
+          child: Center(
+            child: Text(
+              'Leave',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineLarge
+                  ?.copyWith(color: Colors.red),
+            ),
+          ),
+        ),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final chat = ref.watch(chatProvider);
-
-    ref.watch(pvrChats).whenData((value) => null);
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(UI.p16),
-        child: chat == null ? _start() : _chat(),
+        child: ref.watch(pvrChat(_chatId)).when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              data: (chat) {
+                return chat == null ? _start() : _chat(chat);
+              },
+              error: ((error, stackTrace) {
+                return Column(
+                  children: [
+                    const Center(
+                      child: Text("Error"),
+                    ),
+                    _start(),
+                  ],
+                );
+              }),
+            ),
       ),
     );
   }
