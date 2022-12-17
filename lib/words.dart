@@ -12,7 +12,6 @@ const List<String> words = [
   'have',
   'to',
   'it',
-  'I',
   'that',
   'for',
   'you',

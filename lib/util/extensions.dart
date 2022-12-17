@@ -3,7 +3,7 @@ import 'package:instachat/providers/firebase.dart';
 
 extension RefExtensions on Ref {
   Future<Map<String, dynamic>?> getDatabaseValue(String path) async {
-    final db = read(firebaseProvider).ref(path);
+    final db = read(pFirebase).ref(path);
     final event = await db.once();
     return event.snapshot.value as Map<String, dynamic>?;
   }
@@ -12,7 +12,7 @@ extension RefExtensions on Ref {
     String path,
     Map<String, dynamic> value,
   ) async {
-    final db = read(firebaseProvider).ref(path);
+    final db = read(pFirebase).ref(path);
     await db.update(value);
   }
 }

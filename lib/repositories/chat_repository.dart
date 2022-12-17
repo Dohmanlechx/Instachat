@@ -39,7 +39,7 @@ class _ChatRepository extends GuardedRepository {
 
   Future<String> create() async {
     final shuffledWords = List.of(file.words)..shuffle();
-    final word = shuffledWords.take(1);
+    final word = shuffledWords.take(2);
 
     final id = word.join('-');
     final chat = Chat(id: id);

@@ -6,12 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/firebase_options.dart';
 import 'package:instachat/models/chat.dart';
 import 'package:instachat/models/error_data.dart';
+import 'package:instachat/providers/app_exceptions.dart';
 import 'package:instachat/providers/chat.dart';
 import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/theme/ui.dart';
 import 'package:instachat/util/constants.dart';
-
-final pvrAppException = StateProvider<ErrorData?>((_) => null);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,19 +55,20 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   late final ScrollController _scrollController;
   late final TextEditingController _controller;
+  late final TextEditingController _idController;
 
   DatabaseReference get databaseRef {
-    final chat = ref.read(chatProvider);
+    final chat = ref.read(pChatById(_chatId)).valueOrNull;
     return database.ref('chats/${chat?.id}');
   }
 
   DatabaseReference get messageFromHostRef {
-    final chat = ref.read(chatProvider);
+    final chat = ref.read(pChatById(_chatId)).valueOrNull;
     return database.ref('chats/hardcodedId/messageFromHost');
   }
 
   DatabaseReference get messageFromGuestRef {
-    final chat = ref.read(chatProvider);
+    final chat = ref.read(pChatById(_chatId)).valueOrNull;
     return database.ref('chats/hardcodedId/messageFromGuest');
   }
 
@@ -82,7 +82,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       setState(() {
         var next = event.snapshot.value as String?;
         _message = next ?? '';
-        ref.read(chatProvider.notifier).updateHostMessage(_message);
+        //ref.read(chatProvider.notifier).updateHostMessage(_message);
       });
 
       if (!_scrollController.hasClients) return;
@@ -95,7 +95,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       setState(() {
         var next = event.snapshot.value as String?;
         _message = next ?? '';
-        ref.read(chatProvider.notifier).updateGuestMessage(_message);
+        // ref.read(chatProvider.notifier).updateGuestMessage(_message);
       });
       if (!_scrollController.hasClients) return;
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -108,23 +108,29 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         var value = _controller.text;
 
         if (host) {
-          ref.read(chatProvider.notifier).updateHostMessage(value);
+          // ref.read(chatProvider.notifier).updateHostMessage(value);
         } else {
-          ref.read(chatProvider.notifier).updateGuestMessage(value);
+          // ref.read(chatProvider.notifier).updateGuestMessage(value);
         }
 
-        final chat = ref.read(chatProvider);
+        final chat = ref.read(pChatById(_chatId)).valueOrNull;
 
-        await databaseRef.update(chat!.toJson());
+        if (chat != null) {
+          await databaseRef.update(chat.toJson());
+        }
+
         if (!_scrollController.hasClients) return;
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
+
+    _idController = TextEditingController();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     _controller.dispose();
+    _idController.dispose();
     super.dispose();
   }
 
@@ -182,20 +188,22 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             final id = await ref.read(chatRepositoryProvider).create();
             setState(() {
               //_chatId = "flour-economically-skin";
-              ref.invalidate(pvrChat);
+              ref.invalidate(pChatById);
               _chatId = id;
             });
           },
           child: Center(
             child: Container(
+              width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.teal.withOpacity(0.2),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(UI.p16),
-                child: Text('Start Chat',
-                    style: Theme.of(context).textTheme.headline3),
+                child: Center(
+                    child: Text('Start',
+                        style: Theme.of(context).textTheme.headline3)),
               ),
             ),
           ),
@@ -203,27 +211,56 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         const SizedBox(height: UI.p16),
         GestureDetector(
           onTap: () async {
-            setState(() {
-              //_chatId = "flour-economically-skin";
-              ref.invalidate(pvrChat);
-              _chatId = "";
-            });
-
-            // await ref
-            //     .read(chatProvider.notifier)
-            //     .join('hardcodedId')
-            //     .catchError((error) => print(error));
+            await showDialog(
+              context: context,
+              builder: ((context) {
+                return AlertDialog(
+                  title: const Text('TextField in Dialog'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        onChanged: (value) {},
+                        controller: _idController,
+                        decoration: const InputDecoration(
+                          hintText: "write the id here",
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          setState(() {
+                            ref.invalidate(pChatById);
+                            _chatId = _idController.text;
+                          });
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          color: Colors.green,
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Center(child: Text('OK')),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              }),
+            );
           },
           child: Center(
             child: Container(
+              width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.teal.withOpacity(0.2),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(UI.p16),
-                child: Text('Join chat',
-                    style: Theme.of(context).textTheme.headline3),
+                child: Center(
+                    child: Text('Join',
+                        style: Theme.of(context).textTheme.headline3)),
               ),
             ),
           ),
@@ -290,7 +327,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<ErrorData?>(pvrAppException, ((_, next) {
+    ref.listen<ErrorData?>(pAppExceptions, ((_, next) {
       final error = next;
       if (error != null) {
         _showErrorSnackBar(error);
@@ -300,7 +337,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(UI.p16),
-        child: ref.watch(pvrChat(_chatId)).when(
+        child: ref.watch(pChatById(_chatId)).when(
               loading: () => const Center(child: CircularProgressIndicator()),
               data: (chat) {
                 return chat == null ? _start() : _chat(chat);
