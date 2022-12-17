@@ -1,7 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/chat.dart';
 import 'package:instachat/providers/firebase.dart';
+import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/words.dart';
+
+final pvrChats = FutureProvider<List<Chat>>((ref) async {
+  final repo = ref.watch(chatRepositoryProvider);
+  return await repo.fetch();
+});
 
 final chatProvider = StateNotifierProvider<ChatNotifier, Chat?>((ref) {
   return ChatNotifier(ref);

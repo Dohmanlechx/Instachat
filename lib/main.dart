@@ -78,6 +78,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         ref.read(chatProvider.notifier).updateHostMessage(_message);
       });
 
+      if (!_scrollController.hasClients) return;
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
 
@@ -89,7 +90,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         _message = next ?? '';
         ref.read(chatProvider.notifier).updateGuestMessage(_message);
       });
-
+      if (!_scrollController.hasClients) return;
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
 
@@ -108,6 +109,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         final chat = ref.read(chatProvider);
 
         await databaseRef.update(chat!.toJson());
+        if (!_scrollController.hasClients) return;
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
   }
@@ -235,6 +237,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final chat = ref.watch(chatProvider);
+
+    ref.watch(pvrChats).whenData((value) => null);
 
     return Scaffold(
       body: Padding(
