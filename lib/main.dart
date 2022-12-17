@@ -7,6 +7,7 @@ import 'package:instachat/firebase_options.dart';
 import 'package:instachat/models/chat.dart';
 import 'package:instachat/models/error_data.dart';
 import 'package:instachat/providers/chat.dart';
+import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/theme/ui.dart';
 import 'package:instachat/util/constants.dart';
 
@@ -176,9 +177,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             host = true;
-            ref.read(chatProvider.notifier).init();
+            final id = await ref.read(chatRepositoryProvider).create();
+            setState(() {
+              //_chatId = "flour-economically-skin";
+              ref.invalidate(pvrChat);
+              _chatId = id;
+            });
           },
           child: Center(
             child: Container(
@@ -272,6 +278,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       ? errorData.exception.toString()
                       : 'Something went wrong!',
                   style: UI.regular20,
+                  maxLines: 5,
                 ),
               ),
             ),

@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/chat.dart';
 import 'package:instachat/providers/firebase.dart';
 import 'package:instachat/repositories/chat_repository.dart';
-import 'package:instachat/words.dart';
+import 'package:instachat/words.dart' as file;
 
 final pvrChats = FutureProvider<List<Chat>>((ref) async {
   final repo = ref.watch(chatRepositoryProvider);
@@ -27,8 +27,8 @@ class ChatNotifier extends StateNotifier<Chat?> {
   String get databasePath => 'chats/${state?.id}';
 
   void init() {
-    final words = List.of(all)..shuffle();
-    final id = words.take(3);
+    final words = List.of(file.words)..shuffle();
+    final id = words.take(1);
     final chat = Chat(id: id.join('-'));
 
     state = chat;

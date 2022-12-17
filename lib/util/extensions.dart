@@ -7,4 +7,12 @@ extension RefExtensions on Ref {
     final event = await db.once();
     return event.snapshot.value as Map<String, dynamic>?;
   }
+
+  Future<void> updateDatabaseValue(
+    String path,
+    Map<String, dynamic> value,
+  ) async {
+    final db = read(firebaseProvider).ref(path);
+    await db.update(value);
+  }
 }
