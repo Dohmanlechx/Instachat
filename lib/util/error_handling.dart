@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-Future<void> guardedFuture(Function fn) async {
+Future<void> guard(Function fn) async {
   try {
     await fn();
   } catch (error, stackTrace) {

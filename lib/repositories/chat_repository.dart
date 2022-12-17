@@ -13,7 +13,7 @@ class _ChatRepository {
   Future<List<Chat>> fetchAll() async {
     final chats = <Chat>[];
 
-    await guardedFuture(() async {
+    await guard(() async {
       final chatsData = await ref.getDatabaseValue('chats/');
 
       if (chatsData != null) {
@@ -27,7 +27,7 @@ class _ChatRepository {
   Future<Chat?> fetch(String id) async {
     Chat? chat;
 
-    await guardedFuture(() async {
+    await guard(() async {
       final chatData = await ref.getDatabaseValue('chats/$id');
 
       if (chatData != null) {
