@@ -1,12 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/firebase_options.dart';
 import 'package:instachat/models/chat.dart';
+import 'package:instachat/models/error_data.dart';
 import 'package:instachat/providers/chat.dart';
 import 'package:instachat/theme/ui.dart';
 import 'package:instachat/util/constants.dart';
+
+final pvrAppException = StateProvider<ErrorData?>((_) => null);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -194,7 +198,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         GestureDetector(
           onTap: () async {
             setState(() {
-              _chatId = "flour-economically-skin";
+              //_chatId = "flour-economically-skin";
+              ref.invalidate(pvrChat);
+              _chatId = "";
             });
 
             // await ref
@@ -251,8 +257,39 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     );
   }
 
+  void _showErrorSnackBar(ErrorData errorData) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.redAccent,
+        content: Row(
+          children: [
+            const Icon(Icons.error, color: Colors.white),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(UI.p8),
+                child: Text(
+                  kDebugMode
+                      ? errorData.exception.toString()
+                      : 'Something went wrong!',
+                  style: UI.regular20,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    ref.listen<ErrorData?>(pvrAppException, ((_, next) {
+      final error = next;
+      if (error != null) {
+        _showErrorSnackBar(error);
+      }
+    }));
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(UI.p16),
@@ -262,14 +299,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 return chat == null ? _start() : _chat(chat);
               },
               error: ((error, stackTrace) {
-                return Column(
-                  children: [
-                    const Center(
-                      child: Text("Error"),
-                    ),
-                    _start(),
-                  ],
-                );
+                return _start();
               }),
             ),
       ),

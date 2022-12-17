@@ -1,14 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/chat.dart';
-import 'package:instachat/util/error_handling.dart';
+import 'package:instachat/repositories/guarded_repository.dart';
 import 'package:instachat/util/extensions.dart';
 
 final chatRepositoryProvider = Provider<_ChatRepository>(_ChatRepository.new);
 
-class _ChatRepository {
-  const _ChatRepository(this.ref);
-
-  final Ref ref;
+class _ChatRepository extends GuardedRepository {
+  const _ChatRepository(Ref ref) : super(ref);
 
   Future<List<Chat>> fetchAll() async {
     final chats = <Chat>[];
