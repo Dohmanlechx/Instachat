@@ -11,6 +11,7 @@ import 'package:instachat/providers/chat.dart';
 import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/theme/ui.dart';
 import 'package:instachat/util/constants.dart';
+import 'package:instachat/widgets/chat_box.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,7 +50,7 @@ class MyHomePage extends ConsumerStatefulWidget {
 }
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
-  String _message = '';
+  final String _message = '';
   bool host = true;
   String? _chatId;
 
@@ -62,44 +63,25 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     return database.ref('chats/${chat?.id}');
   }
 
-  DatabaseReference get messageFromHostRef {
+  DatabaseReference? get messageFromHostRef {
     final chat = ref.read(pChatById(_chatId)).valueOrNull;
-    return database.ref('chats/hardcodedId/messageFromHost');
+    if (chat == null) {
+      return null;
+    }
+    return database.ref('chats/${chat.id}/messageFromHost');
   }
 
-  DatabaseReference get messageFromGuestRef {
+  DatabaseReference? get messageFromGuestRef {
     final chat = ref.read(pChatById(_chatId)).valueOrNull;
-    return database.ref('chats/hardcodedId/messageFromGuest');
+    if (chat == null) {
+      return null;
+    }
+    return database.ref('chats/${chat.id}/messageFromGuest');
   }
 
   @override
   void initState() {
     super.initState();
-
-    messageFromHostRef.onValue.listen((event) {
-      if (host) return;
-
-      setState(() {
-        var next = event.snapshot.value as String?;
-        _message = next ?? '';
-        //ref.read(chatProvider.notifier).updateHostMessage(_message);
-      });
-
-      if (!_scrollController.hasClients) return;
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    });
-
-    messageFromGuestRef.onValue.listen((event) {
-      if (!host) return;
-
-      setState(() {
-        var next = event.snapshot.value as String?;
-        _message = next ?? '';
-        // ref.read(chatProvider.notifier).updateGuestMessage(_message);
-      });
-      if (!_scrollController.hasClients) return;
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    });
 
     _scrollController = ScrollController();
 
@@ -108,16 +90,22 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         var value = _controller.text;
 
         if (host) {
+          await ref
+              .read(chatRepositoryProvider)
+              .updateHostMessage(_chatId!, message: value);
           // ref.read(chatProvider.notifier).updateHostMessage(value);
         } else {
+          await ref
+              .read(chatRepositoryProvider)
+              .updateGuestMessage(_chatId!, message: value);
           // ref.read(chatProvider.notifier).updateGuestMessage(value);
         }
 
-        final chat = ref.read(pChatById(_chatId)).valueOrNull;
+        // final chat = ref.read(pChatById(_chatId)).valueOrNull;
 
-        if (chat != null) {
-          await databaseRef.update(chat.toJson());
-        }
+        // if (chat != null) {
+        //   await databaseRef.update(chat.toJson());
+        // }
 
         if (!_scrollController.hasClients) return;
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -138,21 +126,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     return [
       Text('Your friend', style: Theme.of(context).textTheme.headline4),
       Expanded(
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.grey.withOpacity(0.2),
-          ),
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            child: Text(
-              _message,
-              textAlign: TextAlign.start,
-              style: Theme.of(context).textTheme.headline5,
-            ),
-          ),
-        ),
+        child: ChatBox.friend(_chatId!, iAmHost: host),
       ),
       Padding(
         padding: const EdgeInsets.only(top: UI.p16),
@@ -211,6 +185,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         const SizedBox(height: UI.p16),
         GestureDetector(
           onTap: () async {
+            host = false;
             await showDialog(
               context: context,
               builder: ((context) {

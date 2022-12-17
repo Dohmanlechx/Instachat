@@ -1,10 +1,15 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class ChatBox extends StatefulWidget {
-  const ChatBox.me({super.key}) : isMe = true;
-  const ChatBox.friend({super.key}) : isMe = false;
+  const ChatBox.me(this.chatId, {required this.iAmHost, super.key})
+      : isMe = true;
+  const ChatBox.friend(this.chatId, {required this.iAmHost, super.key})
+      : isMe = false;
 
+  final String chatId;
   final bool isMe;
+  final bool iAmHost;
 
   @override
   State<ChatBox> createState() => _ChatBoxState();
@@ -13,12 +18,37 @@ class ChatBox extends StatefulWidget {
 class _ChatBoxState extends State<ChatBox> {
   late final ScrollController _scrollController;
 
-  final String _message = '';
+  String _message = '';
+
+  DatabaseReference get messageFromHostRef {
+    return FirebaseDatabase.instance
+        .ref('chats/${widget.chatId}/messageFromHost');
+  }
+
+  DatabaseReference get messageFromGuestRef {
+    return FirebaseDatabase.instance
+        .ref('chats/${widget.chatId}/messageFromGuest');
+  }
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+
+    DatabaseReference databaseRef;
+
+    if (widget.iAmHost) {
+      databaseRef = messageFromGuestRef;
+    } else {
+      databaseRef = messageFromHostRef;
+    }
+
+    databaseRef.onValue.listen((event) {
+      setState(() {
+        var next = event.snapshot.value as String?;
+        _message = next ?? '';
+      });
+    });
   }
 
   @override
@@ -29,26 +59,22 @@ class _ChatBoxState extends State<ChatBox> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(widget.isMe ? 'You' : 'Friend',
-            style: Theme.of(context).textTheme.headline4),
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.grey.withOpacity(0.2),
-          ),
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            child: Text(
-              _message,
-              textAlign: TextAlign.start,
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ),
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: widget.isMe
+            ? Colors.blueGrey.withOpacity(0.2)
+            : Colors.grey.withOpacity(0.2),
+      ),
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        child: Text(
+          _message,
+          textAlign: TextAlign.start,
+          style: Theme.of(context).textTheme.headline4,
         ),
-      ],
+      ),
     );
   }
 }

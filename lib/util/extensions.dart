@@ -15,4 +15,9 @@ extension RefExtensions on Ref {
     final db = read(pFirebase).ref(path);
     await db.update(value);
   }
+
+  Future<void> setDatabaseValue(String path, Object? value) async {
+    final db = read(pFirebase).ref(path);
+    await db.set(value);
+  }
 }

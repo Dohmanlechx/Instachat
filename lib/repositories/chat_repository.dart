@@ -38,7 +38,8 @@ class _ChatRepository extends GuardedRepository {
   }
 
   Future<String> create() async {
-    final shuffledWords = List.of(file.words)..shuffle();
+    final shuffledWords = List.of(file.words.map((e) => e.toLowerCase()))
+      ..shuffle();
     final word = shuffledWords.take(2);
 
     final id = word.join('-');
@@ -47,5 +48,17 @@ class _ChatRepository extends GuardedRepository {
     await guard(() => ref.updateDatabaseValue('chats/$id', chat.toJson()));
 
     return chat.id;
+  }
+
+  Future<void> updateHostMessage(String id, {required String message}) async {
+    await guard(
+      () => ref.setDatabaseValue('chats/$id/messageFromHost', message),
+    );
+  }
+
+  Future<void> updateGuestMessage(String id, {required String message}) async {
+    await guard(
+      () => ref.setDatabaseValue('chats/$id/messageFromGuest', message),
+    );
   }
 }
