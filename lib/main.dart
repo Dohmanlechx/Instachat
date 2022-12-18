@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/firebase_options.dart';
 import 'package:instachat/models/chat.dart';
@@ -11,7 +11,8 @@ import 'package:instachat/providers/chat.dart';
 import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/theme/ui.dart';
 import 'package:instachat/util/constants.dart';
-import 'package:instachat/widgets/chat_box.dart';
+import 'package:instachat/widgets/chat_box_friend.dart';
+import 'package:instachat/widgets/chat_box_me.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -94,27 +95,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     return [
       Text('Your friend', style: Theme.of(context).textTheme.headline4),
       Expanded(
-        child: ChatBox.friend(_chatId!, iAmHost: host),
+        child: FriendChatBox(_chatId!, isHost: host),
       ),
       Padding(
         padding: const EdgeInsets.only(top: UI.p16),
         child: Text('You', style: Theme.of(context).textTheme.headline4),
       ),
       Expanded(
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.blueGrey.withOpacity(0.2),
-          ),
-          child: TextField(
-            controller: _controller,
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            style: Theme.of(context).textTheme.headline5,
-            decoration: null,
-          ),
-        ),
+        child: MyChatBox(_chatId!, isHost: host),
       ),
     ];
   }
@@ -218,10 +206,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       children: <Widget>[
         ..._viewForHost(),
         const SizedBox(height: 30),
-        Center(
-          child: Text(
-            'Chat ID: ${chat.id}',
-            style: const TextStyle(fontSize: 30),
+        GestureDetector(
+          onTap: () async {
+            await Clipboard.setData(ClipboardData(text: chat.id)).then((_) {
+              _showSnackBar('Copied to clipboard!');
+            });
+          },
+          child: Center(
+            child: Text(
+              'Chat ID: ${chat.id}',
+              style: const TextStyle(fontSize: 30),
+            ),
           ),
         ),
         const SizedBox(height: 30),
@@ -243,29 +238,56 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     );
   }
 
-  void _showErrorSnackBar(ErrorData errorData) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Colors.redAccent,
-        content: Row(
-          children: [
-            const Icon(Icons.error, color: Colors.white),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(UI.p8),
-                child: Text(
-                  kDebugMode
-                      ? errorData.exception.toString()
-                      : 'Something went wrong!',
-                  style: UI.regular20,
-                  maxLines: 5,
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(UI.p8),
+                  child: Text(
+                    message,
+                    style: UI.regular20,
+                    maxLines: 5,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+  }
+
+  void _showErrorSnackBar(ErrorData errorData) {
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.white),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(UI.p8),
+                  child: Text(
+                    kDebugMode
+                        ? errorData.exception.toString()
+                        : 'Something went wrong!',
+                    style: UI.regular20,
+                    maxLines: 5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
   }
 
   @override

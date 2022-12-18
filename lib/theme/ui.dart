@@ -4,6 +4,9 @@ abstract class UI {
   // Theme data
   static final theme = ThemeData(primarySwatch: Colors.teal);
 
+  // Border radius
+  static final radius = BorderRadius.circular(10);
+
   // Paddings
   static const p4 = 4.0;
   static const p8 = 8.0;

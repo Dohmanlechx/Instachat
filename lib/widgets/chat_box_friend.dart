@@ -1,21 +1,18 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:instachat/theme/ui.dart';
 
-class ChatBox extends StatefulWidget {
-  const ChatBox.me(this.chatId, {required this.iAmHost, super.key})
-      : isMe = true;
-  const ChatBox.friend(this.chatId, {required this.iAmHost, super.key})
-      : isMe = false;
+class FriendChatBox extends StatefulWidget {
+  const FriendChatBox(this.chatId, {required this.isHost, super.key});
 
   final String chatId;
-  final bool isMe;
-  final bool iAmHost;
+  final bool isHost;
 
   @override
-  State<ChatBox> createState() => _ChatBoxState();
+  State<FriendChatBox> createState() => _FriendChatBoxState();
 }
 
-class _ChatBoxState extends State<ChatBox> {
+class _FriendChatBoxState extends State<FriendChatBox> {
   late final ScrollController _scrollController;
 
   String _message = '';
@@ -37,7 +34,7 @@ class _ChatBoxState extends State<ChatBox> {
 
     DatabaseReference databaseRef;
 
-    if (widget.iAmHost) {
+    if (widget.isHost) {
       databaseRef = messageFromGuestRef;
     } else {
       databaseRef = messageFromHostRef;
@@ -62,17 +59,18 @@ class _ChatBoxState extends State<ChatBox> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: widget.isMe
-            ? Colors.blueGrey.withOpacity(0.2)
-            : Colors.grey.withOpacity(0.2),
+        borderRadius: UI.radius,
+        color: Colors.grey.withOpacity(0.2),
       ),
       child: SingleChildScrollView(
         controller: _scrollController,
-        child: Text(
-          _message,
-          textAlign: TextAlign.start,
-          style: Theme.of(context).textTheme.headline4,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: UI.p16),
+          child: Text(
+            _message,
+            textAlign: TextAlign.start,
+            style: Theme.of(context).textTheme.headline4,
+          ),
         ),
       ),
     );
