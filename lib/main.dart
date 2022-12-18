@@ -117,7 +117,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             host = true;
             final id = await ref.read(chatRepositoryProvider).create();
             setState(() {
-              //_chatId = "flour-economically-skin";
               ref.invalidate(pChatById);
               _chatId = id;
             });

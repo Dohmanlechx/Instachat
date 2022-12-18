@@ -1,31 +1,29 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:instachat/providers/firebase.dart';
 import 'package:instachat/theme/ui.dart';
 
-class FriendChatBox extends StatefulWidget {
+class FriendChatBox extends ConsumerStatefulWidget {
   const FriendChatBox(this.chatId, {required this.isHost, super.key});
 
   final String chatId;
   final bool isHost;
 
   @override
-  State<FriendChatBox> createState() => _FriendChatBoxState();
+  ConsumerState<FriendChatBox> createState() => _FriendChatBoxState();
 }
 
-class _FriendChatBoxState extends State<FriendChatBox> {
+class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
   late final ScrollController _scrollController;
 
   String _message = '';
 
-  DatabaseReference get messageFromHostRef {
-    return FirebaseDatabase.instance
-        .ref('chats/${widget.chatId}/messageFromHost');
-  }
+  DatabaseReference get messageFromHostRef =>
+      ref.read(pFirebase).ref('chats/${widget.chatId}/messageFromHost');
 
-  DatabaseReference get messageFromGuestRef {
-    return FirebaseDatabase.instance
-        .ref('chats/${widget.chatId}/messageFromGuest');
-  }
+  DatabaseReference get messageFromGuestRef =>
+      ref.read(pFirebase).ref('chats/${widget.chatId}/messageFromGuest');
 
   @override
   void initState() {
@@ -65,7 +63,7 @@ class _FriendChatBoxState extends State<FriendChatBox> {
       child: SingleChildScrollView(
         controller: _scrollController,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: UI.p16),
+          padding: const EdgeInsets.all(UI.p16),
           child: Text(
             _message,
             textAlign: TextAlign.start,
