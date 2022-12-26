@@ -14,6 +14,8 @@ class GuardedRepository {
       await fn();
     } catch (error, stackTrace) {
       log('Something went wrong!', error: error, stackTrace: stackTrace);
+      log(error.toString());
+      log(stackTrace.toString());
       ref.read(pAppExceptions.notifier).state = ErrorData(error, stackTrace);
     }
   }

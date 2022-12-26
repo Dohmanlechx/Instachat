@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/chat.dart';
+import 'package:instachat/models/user.dart';
 import 'package:instachat/repositories/guarded_repository.dart';
 import 'package:instachat/util/extensions/ref.dart';
 import 'package:instachat/words.dart' as file;
+import 'package:uuid/uuid.dart';
 
 final chatRepositoryProvider = Provider<_ChatRepository>(_ChatRepository.new);
 
@@ -43,7 +45,7 @@ class _ChatRepository extends GuardedRepository {
     final word = shuffledWords.take(2);
 
     final id = word.join('-');
-    final chat = Chat(id: id);
+    final chat = Chat(id: id, users: [User(id: const Uuid().v4())]);
 
     await guard(() => ref.updateDatabaseValue('chats/$id', chat.toJson()));
 
