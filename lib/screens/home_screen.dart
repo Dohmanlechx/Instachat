@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/error_data.dart';
 import 'package:instachat/providers/app_exceptions.dart';
-import 'package:instachat/providers/chat.dart';
 import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/screens/app_scaffold.dart';
 import 'package:instachat/screens/chat_screen.dart';
@@ -20,43 +19,20 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _MyHomePageState extends ConsumerState<HomeScreen> {
   bool host = true;
-  String? _chatId;
 
   late final ScrollController _scrollController;
-  late final TextEditingController _controller;
   late final TextEditingController _idController;
 
   @override
   void initState() {
     super.initState();
-
     _scrollController = ScrollController();
-
-    _controller = TextEditingController()
-      ..addListener(() async {
-        var value = _controller.text;
-
-        if (host) {
-          await ref
-              .read(chatRepositoryProvider)
-              .updateHostMessage(_chatId!, message: value);
-        } else {
-          await ref
-              .read(chatRepositoryProvider)
-              .updateGuestMessage(_chatId!, message: value);
-        }
-
-        if (!_scrollController.hasClients) return;
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      });
-
     _idController = TextEditingController();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _controller.dispose();
     _idController.dispose();
     super.dispose();
   }
@@ -116,12 +92,17 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           Navigator.of(context).pop();
-                          setState(() {
-                            ref.invalidate(pChatById);
-                            _chatId = _idController.text;
-                          });
+                          final navigator = Navigator.of(context);
+                          await navigator.push(
+                            PageRouteBuilder(
+                              pageBuilder: ((_, __, ___) => ChatScreen(
+                                  chatId: _idController.text, isHost: host)),
+                              transitionDuration: Duration.zero,
+                              reverseTransitionDuration: Duration.zero,
+                            ),
+                          );
                         },
                         child: Container(
                           width: double.infinity,

@@ -39,8 +39,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             loading: () => const Center(child: CircularProgressIndicator()),
             data: (chat) => _chatView(),
             error: ((error, stackTrace) {
-              Navigator.of(context).pop();
-              return const SizedBox();
+              ref.read(pAppExceptions.notifier).state =
+                  ErrorData(error, stackTrace);
+              return _chatView();
             }),
           ),
     );
