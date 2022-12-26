@@ -30,6 +30,13 @@
             {
               "client_id": "836589714155-ehdu98hfge6t6offv6gtob8hhhqbb5kb.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "836589714155-4g36lsdo0020q9vj4i42tbcv1fsk6v7q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.instachat"
+              }
             }
           ]
         }
