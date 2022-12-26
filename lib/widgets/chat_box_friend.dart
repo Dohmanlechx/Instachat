@@ -58,7 +58,7 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: UI.radius,
-        color: Colors.grey.withOpacity(0.2),
+        color: UI.secondary.withOpacity(0.2),
       ),
       child: SingleChildScrollView(
         controller: _scrollController,

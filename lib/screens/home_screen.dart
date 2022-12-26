@@ -61,7 +61,7 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
               width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.indigoAccent,
+                color: UI.secondary,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(UI.p16),
@@ -124,7 +124,7 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
               width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.indigoAccent,
+                color: UI.secondary,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(UI.p16),

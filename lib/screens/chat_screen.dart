@@ -55,10 +55,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         const SizedBox(height: 30),
         GestureDetector(
           onTap: () async {
-            await Clipboard.setData(ClipboardData(text: widget.chatId))
-                .then((_) {
-              context.showPositiveSnackbar('Copied to clipboard!');
-            });
+            await Clipboard.setData(ClipboardData(text: widget.chatId)).then(
+              (_) => context.showPositiveSnackbar('Copied to clipboard'),
+            );
           },
           child: Center(
             child: Text(
@@ -88,14 +87,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   List<Widget> _viewForHost() {
     return [
-      Text('Your friend', style: Theme.of(context).textTheme.headline4),
       Expanded(
         child: FriendChatBox(widget.chatId, isHost: widget.isHost),
       ),
-      Padding(
-        padding: const EdgeInsets.only(top: UI.p16),
-        child: Text('You', style: Theme.of(context).textTheme.headline4),
-      ),
+      const SizedBox(height: UI.p16),
       Expanded(
         child: MyChatBox(widget.chatId, isHost: widget.isHost),
       ),
