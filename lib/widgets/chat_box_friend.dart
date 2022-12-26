@@ -58,7 +58,15 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: UI.radius,
-        color: UI.secondary.withOpacity(0.2),
+        color: UI.chatbox,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: SingleChildScrollView(
         controller: _scrollController,
@@ -67,7 +75,7 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
           child: Text(
             _message,
             textAlign: TextAlign.start,
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headline5,
           ),
         ),
       ),

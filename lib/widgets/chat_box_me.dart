@@ -48,7 +48,15 @@ class _MyChatBoxState extends ConsumerState<MyChatBox> {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: UI.radius,
-        color: Colors.blueGrey.withOpacity(0.2),
+        color: UI.myChatbox,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(UI.p16),
@@ -57,7 +65,10 @@ class _MyChatBoxState extends ConsumerState<MyChatBox> {
           keyboardType: TextInputType.multiline,
           maxLines: null,
           style: Theme.of(context).textTheme.headline5,
-          decoration: null,
+          decoration: const InputDecoration(
+            hintText: 'Write something...',
+            border: InputBorder.none,
+          ),
         ),
       ),
     );
