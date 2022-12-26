@@ -15,5 +15,5 @@ _$_Chat _$$_ChatFromJson(Map<String, dynamic> json) => _$_Chat(
 
 Map<String, dynamic> _$$_ChatToJson(_$_Chat instance) => <String, dynamic>{
       'id': instance.id,
-      'users': instance.users,
+      'users': instance.users.map((e) => e.toJson()).toList(),
     };
