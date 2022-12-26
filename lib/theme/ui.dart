@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 abstract class UI {
   // Theme data
-  static final theme = ThemeData(primarySwatch: Colors.teal);
+  static final theme = ThemeData(primarySwatch: Colors.indigo);
 
   // Border radius
   static final radius = BorderRadius.circular(10);

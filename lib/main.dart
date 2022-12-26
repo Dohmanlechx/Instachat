@@ -126,7 +126,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.teal.withOpacity(0.2),
+                color: Colors.indigoAccent,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(UI.p16),
@@ -184,7 +184,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.teal.withOpacity(0.2),
+                color: Colors.indigoAccent,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(UI.p16),
@@ -299,6 +299,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     }));
 
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       body: Padding(
         padding: const EdgeInsets.all(UI.p16),
         child: ref.watch(pChatById(_chatId)).when(
