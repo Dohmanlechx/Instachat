@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:instachat/providers/user_id.dart';
 import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/theme/ui.dart';
 
 class MyChatBox extends ConsumerStatefulWidget {
-  const MyChatBox(this.chatId, {required this.isHost, super.key});
+  const MyChatBox({
+    required this.userId,
+    required this.chatId,
+    required this.isHost,
+    super.key,
+  });
 
+  final String userId;
   final String chatId;
   final bool isHost;
 
@@ -24,15 +31,11 @@ class _MyChatBoxState extends ConsumerState<MyChatBox> {
       ..addListener(() async {
         var value = _controller.text;
 
-        if (widget.isHost) {
-          await ref
-              .read(chatRepositoryProvider)
-              .updateHostMessage(widget.chatId, message: value);
-        } else {
-          await ref
-              .read(chatRepositoryProvider)
-              .updateGuestMessage(widget.chatId, message: value);
-        }
+        await ref.read(chatRepositoryProvider).updateMessage(
+              widget.chatId,
+              widget.userId,
+              message: value,
+            );
       });
   }
 

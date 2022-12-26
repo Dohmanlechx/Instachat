@@ -10,7 +10,9 @@ class AppScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: UI.primary,
-      body: Padding(padding: const EdgeInsets.all(UI.p16), child: body),
+      body: SafeArea(
+        child: Padding(padding: const EdgeInsets.all(UI.p16), child: body),
+      ),
     );
   }
 }

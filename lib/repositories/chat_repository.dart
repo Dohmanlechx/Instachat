@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/chat.dart';
 import 'package:instachat/models/user.dart';
+import 'package:instachat/providers/user_id.dart';
 import 'package:instachat/repositories/guarded_repository.dart';
 import 'package:instachat/util/extensions/ref.dart';
 import 'package:instachat/words.dart' as file;
-import 'package:uuid/uuid.dart';
 
 final chatRepositoryProvider = Provider<_ChatRepository>(_ChatRepository.new);
 
@@ -25,7 +25,7 @@ class _ChatRepository extends GuardedRepository {
     return chats;
   }
 
-  Future<Chat?> fetch(String id) async {
+  Future<Chat> fetch(String id) async {
     Chat? chat;
 
     await guard(() async {
@@ -36,7 +36,13 @@ class _ChatRepository extends GuardedRepository {
       }
     });
 
-    return chat;
+    final c = chat;
+
+    if (c != null) {
+      return c;
+    } else {
+      throw Exception('No chat found!');
+    }
   }
 
   Future<String> create() async {
@@ -44,23 +50,29 @@ class _ChatRepository extends GuardedRepository {
       ..shuffle();
     final word = shuffledWords.take(2);
 
-    final id = word.join('-');
-    final chat = Chat(id: id, users: [User(id: const Uuid().v4())]);
+    final chatId = word.join('-');
+    final userId = ref.read(pUserId);
+    final chat = Chat(id: chatId, users: {userId: User(id: userId)});
 
-    await guard(() => ref.updateDatabaseValue('chats/$id', chat.toJson()));
+    await guard(() => ref.updateDatabaseValue('chats/$chatId', chat.toJson()));
 
     return chat.id;
   }
 
-  Future<void> updateHostMessage(String id, {required String message}) async {
-    await guard(
-      () => ref.setDatabaseValue('chats/$id/messageFromHost', message),
-    );
+  Future<void> join(String chatId) async {
+    final userId = ref.read(pUserId);
+
+    await guard(() => ref.setDatabaseValue(
+        'chats/$chatId/users/$userId', User(id: userId).toJson()));
   }
 
-  Future<void> updateGuestMessage(String id, {required String message}) async {
+  Future<void> updateMessage(
+    String id,
+    String userId, {
+    required String message,
+  }) async {
     await guard(
-      () => ref.setDatabaseValue('chats/$id/messageFromGuest', message),
+      () => ref.setDatabaseValue('chats/$id/$userId/message', message),
     );
   }
 }

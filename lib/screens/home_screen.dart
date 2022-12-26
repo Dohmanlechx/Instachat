@@ -95,10 +95,16 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
                         onTap: () async {
                           Navigator.of(context).pop();
                           final navigator = Navigator.of(context);
+                          await ref
+                              .read(chatRepositoryProvider)
+                              .join(_idController.text);
+
                           await navigator.push(
                             PageRouteBuilder(
                               pageBuilder: ((_, __, ___) => ChatScreen(
-                                  chatId: _idController.text, isHost: host)),
+                                    chatId: _idController.text,
+                                    isHost: host,
+                                  )),
                               transitionDuration: Duration.zero,
                               reverseTransitionDuration: Duration.zero,
                             ),

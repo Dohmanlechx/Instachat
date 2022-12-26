@@ -8,12 +8,12 @@ part of 'chat.dart';
 
 _$_Chat _$$_ChatFromJson(Map<String, dynamic> json) => _$_Chat(
       id: json['id'] as String,
-      users: (json['users'] as List<dynamic>)
-          .map((e) => User.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      users: (json['users'] as Map<String, dynamic>).map(
+        (k, e) => MapEntry(k, User.fromJson(e as Map<String, dynamic>)),
+      ),
     );
 
 Map<String, dynamic> _$$_ChatToJson(_$_Chat instance) => <String, dynamic>{
       'id': instance.id,
-      'users': instance.users.map((e) => e.toJson()).toList(),
+      'users': instance.users.map((k, e) => MapEntry(k, e.toJson())),
     };

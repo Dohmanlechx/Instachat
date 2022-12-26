@@ -5,8 +5,14 @@ import 'package:instachat/providers/firebase.dart';
 import 'package:instachat/theme/ui.dart';
 
 class FriendChatBox extends ConsumerStatefulWidget {
-  const FriendChatBox(this.chatId, {required this.isHost, super.key});
+  const FriendChatBox({
+    required this.friendUserId,
+    required this.chatId,
+    required this.isHost,
+    super.key,
+  });
 
+  final String friendUserId;
   final String chatId;
   final bool isHost;
 
@@ -19,11 +25,9 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
 
   String _message = '';
 
-  DatabaseReference get messageFromHostRef =>
-      ref.read(pFirebase).ref('chats/${widget.chatId}/messageFromHost');
-
-  DatabaseReference get messageFromGuestRef =>
-      ref.read(pFirebase).ref('chats/${widget.chatId}/messageFromGuest');
+  DatabaseReference get messageFromHostRef => ref
+      .read(pFirebase)
+      .ref('chats/${widget.chatId}/${widget.friendUserId}/message');
 
   @override
   void initState() {
@@ -32,11 +36,7 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
 
     DatabaseReference databaseRef;
 
-    if (widget.isHost) {
-      databaseRef = messageFromGuestRef;
-    } else {
-      databaseRef = messageFromHostRef;
-    }
+    databaseRef = messageFromHostRef;
 
     databaseRef.onValue.listen((event) {
       setState(() {

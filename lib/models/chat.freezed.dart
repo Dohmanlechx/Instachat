@@ -21,7 +21,7 @@ Chat _$ChatFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Chat {
   String get id => throw _privateConstructorUsedError;
-  List<User> get users => throw _privateConstructorUsedError;
+  Map<String, User> get users => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -33,7 +33,7 @@ abstract class $ChatCopyWith<$Res> {
   factory $ChatCopyWith(Chat value, $Res Function(Chat) then) =
       _$ChatCopyWithImpl<$Res, Chat>;
   @useResult
-  $Res call({String id, List<User> users});
+  $Res call({String id, Map<String, User> users});
 }
 
 /// @nodoc
@@ -60,7 +60,7 @@ class _$ChatCopyWithImpl<$Res, $Val extends Chat>
       users: null == users
           ? _value.users
           : users // ignore: cast_nullable_to_non_nullable
-              as List<User>,
+              as Map<String, User>,
     ) as $Val);
   }
 }
@@ -71,7 +71,7 @@ abstract class _$$_ChatCopyWith<$Res> implements $ChatCopyWith<$Res> {
       __$$_ChatCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, List<User> users});
+  $Res call({String id, Map<String, User> users});
 }
 
 /// @nodoc
@@ -94,7 +94,7 @@ class __$$_ChatCopyWithImpl<$Res> extends _$ChatCopyWithImpl<$Res, _$_Chat>
       users: null == users
           ? _value._users
           : users // ignore: cast_nullable_to_non_nullable
-              as List<User>,
+              as Map<String, User>,
     ));
   }
 }
@@ -102,18 +102,19 @@ class __$$_ChatCopyWithImpl<$Res> extends _$ChatCopyWithImpl<$Res, _$_Chat>
 /// @nodoc
 @JsonSerializable()
 class _$_Chat implements _Chat {
-  _$_Chat({required this.id, required final List<User> users}) : _users = users;
+  _$_Chat({required this.id, required final Map<String, User> users})
+      : _users = users;
 
   factory _$_Chat.fromJson(Map<String, dynamic> json) => _$$_ChatFromJson(json);
 
   @override
   final String id;
-  final List<User> _users;
+  final Map<String, User> _users;
   @override
-  List<User> get users {
-    if (_users is EqualUnmodifiableListView) return _users;
+  Map<String, User> get users {
+    if (_users is EqualUnmodifiableMapView) return _users;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_users);
+    return EqualUnmodifiableMapView(_users);
   }
 
   @override
@@ -150,15 +151,16 @@ class _$_Chat implements _Chat {
 }
 
 abstract class _Chat implements Chat {
-  factory _Chat({required final String id, required final List<User> users}) =
-      _$_Chat;
+  factory _Chat(
+      {required final String id,
+      required final Map<String, User> users}) = _$_Chat;
 
   factory _Chat.fromJson(Map<String, dynamic> json) = _$_Chat.fromJson;
 
   @override
   String get id;
   @override
-  List<User> get users;
+  Map<String, User> get users;
   @override
   @JsonKey(ignore: true)
   _$$_ChatCopyWith<_$_Chat> get copyWith => throw _privateConstructorUsedError;
