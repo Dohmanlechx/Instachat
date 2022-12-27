@@ -49,7 +49,7 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
             await navigator.push(
               PageRouteBuilder(
                 pageBuilder: ((_, __, ___) =>
-                    ChatScreen(chatId: id, isHost: host)),
+                    ChatScreen(chatId: id, isAdmin: host)),
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
@@ -102,7 +102,7 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
                             PageRouteBuilder(
                               pageBuilder: ((_, __, ___) => ChatScreen(
                                     chatId: _idController.text,
-                                    isHost: host,
+                                    isAdmin: host,
                                   )),
                               transitionDuration: Duration.zero,
                               reverseTransitionDuration: Duration.zero,

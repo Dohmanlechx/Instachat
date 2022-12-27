@@ -1,6 +1,6 @@
 String randomizedId() {
   final shuffled = List.of(words.map((word) => word.toLowerCase()))..shuffle();
-  return shuffled.take(2).join('-');
+  return shuffled.take(3).join('-');
 }
 
 /// Lists 5000 top English words.

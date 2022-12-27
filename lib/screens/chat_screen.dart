@@ -10,6 +10,7 @@ import 'package:instachat/providers/firebase.dart';
 import 'package:instachat/providers/user_id.dart';
 import 'package:instachat/screens/app_scaffold.dart';
 import 'package:instachat/theme/ui.dart';
+import 'package:instachat/util/extensions/chat.dart';
 import 'package:instachat/util/extensions/context.dart';
 import 'package:instachat/widgets/chat_box_friend.dart';
 import 'package:instachat/widgets/chat_box_me.dart';
@@ -17,12 +18,12 @@ import 'package:instachat/widgets/chat_box_me.dart';
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({
     required this.chatId,
-    required this.isHost,
+    required this.isAdmin,
     super.key,
   });
 
   final String chatId;
-  final bool isHost;
+  final bool isAdmin;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ChatScreenState();
@@ -35,9 +36,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    usersRef.onValue.listen((event) {
-      ref.refresh(pChatById(widget.chatId));
-    });
+    usersRef.onValue.listen((_) => ref.refresh(pChatById(widget.chatId)));
   }
 
   @override
@@ -51,76 +50,100 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     return AppScaffold(
       body: ref.watch(pChatById(widget.chatId)).when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            data: (chat) => _chatView(chat),
+            loading: () => _content(),
+            data: (chat) => _content(chat),
             error: ((error, stackTrace) {
               Future.microtask(() {
                 ref.read(pAppExceptions.notifier).state =
                     ErrorData(error, stackTrace);
+                Navigator.of(context).pop();
               });
 
-              return Center(
-                child: Text(
-                  'Error!',
-                  style: Theme.of(context).textTheme.headline2,
-                ),
-              );
+              return const SizedBox();
             }),
           ),
     );
   }
 
-  Widget _chatView(Chat chat) {
+  Widget _content([Chat? chat]) {
+    final chatId = chat?.id;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        ..._viewForHost(
-          chat.users.keys.where((e) => e != ref.read(pUserId)).toList(),
-        ),
-        const SizedBox(height: 30),
-        GestureDetector(
-          onTap: () async {
-            await Clipboard.setData(ClipboardData(text: chat.id)).then(
-              (_) => context.showSuccessSnackbar('Copied to clipboard!'),
-            );
-          },
-          child: Center(
-            child: Text(
-              'Chat ID: ${chat.id}',
-              style: const TextStyle(fontSize: 30),
-            ),
-          ),
-        ),
-        const SizedBox(height: 30),
-        GestureDetector(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: Center(
-            child: Text(
-              'Leave',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(color: Colors.red),
-            ),
-          ),
-        ),
+        ..._chatBoxes(chat),
+        if (chatId != null) _chatId(chatId),
+        _leaveButton(),
       ],
     );
   }
 
-  List<Widget> _viewForHost(List<String> friendUserIds) {
+  Widget _chatId(String id) {
+    return Padding(
+      padding: const EdgeInsets.all(UI.p24),
+      child: GestureDetector(
+        onTap: () async {
+          await Clipboard.setData(ClipboardData(text: id)).then(
+            (_) => context.showSuccessSnackbar('Copied to clipboard!'),
+          );
+        },
+        child: Center(
+          child: Text(
+            'Chat ID: $id',
+            style: const TextStyle(fontSize: 30),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _leaveButton() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pop();
+      },
+      child: Align(
+        alignment: Alignment.bottomRight,
+        child: Container(
+          width: 100,
+          height: 50,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.0),
+            color: Colors.red,
+          ),
+          child: const Icon(Icons.phone_disabled_sharp),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _chatBoxes(Chat? chat) {
+    final userId = ref.read(pUserId);
+    final friendUserIds = chat?.friendUserIds(userId) ?? [];
     final friend = friendUserIds.isEmpty ? null : friendUserIds.first;
 
     return [
       friend == null
-          ? const Spacer()
+          ? Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(color: UI.secondary),
+                    SizedBox(height: UI.p16),
+                    Text(
+                      'Waiting for someone to connect...',
+                      style: TextStyle(color: UI.secondary),
+                    )
+                  ],
+                ),
+              ),
+            )
           : Expanded(
               child: FriendChatBox(
-                friendUserId: friendUserIds.first,
+                friendUserId: friend,
                 chatId: widget.chatId,
-                isHost: widget.isHost,
+                isHost: widget.isAdmin,
               ),
             ),
       const SizedBox(height: UI.p16),
@@ -128,7 +151,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         child: MyChatBox(
           userId: ref.read(pUserId),
           chatId: widget.chatId,
-          isHost: widget.isHost,
+          isHost: widget.isAdmin,
         ),
       ),
     ];
