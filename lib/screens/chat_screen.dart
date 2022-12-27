@@ -45,7 +45,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ref.listen<ErrorData?>(pAppExceptions, ((_, next) {
       final error = next;
       if (error != null) {
-        context.showNegativeSnackBar(error);
+        context.showErrorSnackbar(error);
       }
     }));
 
@@ -81,7 +81,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         GestureDetector(
           onTap: () async {
             await Clipboard.setData(ClipboardData(text: chat.id)).then(
-              (_) => context.showPositiveSnackbar('Copied to clipboard!'),
+              (_) => context.showSuccessSnackbar('Copied to clipboard!'),
             );
           },
           child: Center(

@@ -44,7 +44,6 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
       children: [
         GestureDetector(
           onTap: () async {
-            host = true;
             final navigator = Navigator.of(context);
             final id = await ref.read(chatRepositoryProvider).create();
             await navigator.push(
@@ -150,7 +149,7 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
     ref.listen<ErrorData?>(pAppExceptions, ((_, next) {
       final error = next;
       if (error != null) {
-        context.showNegativeSnackBar(error);
+        context.showErrorSnackbar(error);
       }
     }));
 
