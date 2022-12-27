@@ -51,6 +51,14 @@ class _ChatRepository extends GuardedRepository {
     });
   }
 
+  Future<void> leave(String chatId) async {
+    final userId = ref.read(pUserId);
+
+    return await guard(() async {
+      await ref.setDatabaseValue('chats/$chatId/users/$userId', null);
+    });
+  }
+
   Future<void> updateMessage(
     String chatId,
     String userId, {

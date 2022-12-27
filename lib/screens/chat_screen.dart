@@ -8,6 +8,7 @@ import 'package:instachat/providers/app_exceptions.dart';
 import 'package:instachat/providers/chat.dart';
 import 'package:instachat/providers/firebase.dart';
 import 'package:instachat/providers/user_id.dart';
+import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/screens/app_scaffold.dart';
 import 'package:instachat/theme/ui.dart';
 import 'package:instachat/util/extensions/chat.dart';
@@ -99,8 +100,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Widget _leaveButton() {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pop();
+      onTap: () async {
+        final navigator = Navigator.of(context);
+        await ref.read(chatRepositoryProvider).leave(widget.chatId);
+        navigator.pop();
       },
       child: Align(
         alignment: Alignment.bottomRight,
