@@ -12,67 +12,52 @@ class _ChatRepository extends GuardedRepository {
   const _ChatRepository(Ref ref) : super(ref);
 
   Future<List<Chat>> fetchAll() async {
-    final chats = <Chat>[];
-
-    await guard(() async {
+    return await guard(() async {
       final chatsData = await ref.getDatabaseValue('chats/');
 
-      if (chatsData != null) {
-        chats.addAll(chatsData.values.map((data) => Chat.fromJson(data)));
-      }
+      return chatsData == null
+          ? List.empty()
+          : List.of(chatsData.values.map((data) => Chat.fromJson(data)));
     });
-
-    return chats;
   }
 
-  Future<Chat> fetch(String id) async {
-    Chat? chat;
+  Future<Chat> fetch(String chatId) async {
+    return await guard(() async {
+      final chatData = await ref.getDatabaseValue('chats/$chatId');
 
-    await guard(() async {
-      final chatData = await ref.getDatabaseValue('chats/$id');
-
-      if (chatData != null) {
-        chat = Chat.fromJson(chatData);
-      }
+      return chatData == null
+          ? throw Exception('No chat found!')
+          : Chat.fromJson(chatData);
     });
-
-    final c = chat;
-
-    if (c != null) {
-      return c;
-    } else {
-      throw Exception('No chat found!');
-    }
   }
 
   Future<String> create() async {
-    final shuffledWords = List.of(file.words.map((e) => e.toLowerCase()))
-      ..shuffle();
-    final word = shuffledWords.take(2);
-
-    final chatId = word.join('-');
+    final chatId = file.randomizedId();
     final userId = ref.read(pUserId);
     final chat = Chat(id: chatId, users: {userId: User(id: userId)});
 
-    await guard(() => ref.updateDatabaseValue('chats/$chatId', chat.toJson()));
-
-    return chat.id;
+    return await guard(() async {
+      await ref.setDatabaseValue('chats/$chatId', chat.toJson());
+      return chatId;
+    });
   }
 
   Future<void> join(String chatId) async {
     final userId = ref.read(pUserId);
 
-    await guard(() => ref.setDatabaseValue(
-        'chats/$chatId/users/$userId', User(id: userId).toJson()));
+    return await guard(() async {
+      final user = User(id: userId).toJson();
+      await ref.setDatabaseValue('chats/$chatId/users/$userId', user);
+    });
   }
 
   Future<void> updateMessage(
-    String id,
+    String chatId,
     String userId, {
     required String message,
   }) async {
-    await guard(
-      () => ref.setDatabaseValue('chats/$id/$userId/message', message),
-    );
+    return await guard(() async {
+      await ref.setDatabaseValue('chats/$chatId/$userId/message', message);
+    });
   }
 }
