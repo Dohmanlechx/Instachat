@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:instachat/providers/user_id.dart';
 import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/theme/ui.dart';
 
