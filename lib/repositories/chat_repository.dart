@@ -57,7 +57,8 @@ class _ChatRepository extends GuardedRepository {
     required String message,
   }) async {
     return await guard(() async {
-      await ref.setDatabaseValue('chats/$chatId/$userId/message', message);
+      await ref.setDatabaseValue(
+          'chats/$chatId/users/$userId/message', message);
     });
   }
 }

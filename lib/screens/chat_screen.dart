@@ -120,10 +120,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   List<Widget> _chatBoxes(Chat? chat) {
     final userId = ref.read(pUserId);
     final friendUserIds = chat?.friendUserIds(userId) ?? [];
-    final friend = friendUserIds.isEmpty ? null : friendUserIds.first;
+    final friends = friendUserIds.isEmpty ? null : friendUserIds;
+    const pd = UI.p8;
 
     return [
-      friend == null
+      friends == null
           ? Expanded(
               child: Center(
                 child: Column(
@@ -140,18 +141,36 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ),
             )
           : Expanded(
-              child: FriendChatBox(
-                friendUserId: friend,
-                chatId: widget.chatId,
-                isHost: widget.isAdmin,
+              child: Row(
+                children: List.generate(friends.length, (i) {
+                  final friend = friends[i];
+
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(pd),
+                      child: SizedBox(
+                        height: double.infinity,
+                        child: FriendChatBox(
+                          key: ValueKey(friend),
+                          friendUserId: friend,
+                          chatId: widget.chatId,
+                          isHost: widget.isAdmin,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
               ),
             ),
-      const SizedBox(height: UI.p16),
+      const SizedBox(height: pd),
       Expanded(
-        child: MyChatBox(
-          userId: ref.read(pUserId),
-          chatId: widget.chatId,
-          isHost: widget.isAdmin,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: pd),
+          child: MyChatBox(
+            userId: ref.read(pUserId),
+            chatId: widget.chatId,
+            isHost: widget.isAdmin,
+          ),
         ),
       ),
     ];

@@ -27,7 +27,7 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
 
   DatabaseReference get messageFromHostRef => ref
       .read(pFirebase)
-      .ref('chats/${widget.chatId}/${widget.friendUserId}/message');
+      .ref('chats/${widget.chatId}/users/${widget.friendUserId}/message');
 
   @override
   void initState() {
@@ -55,7 +55,6 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: UI.radius,
         color: UI.chatbox,
