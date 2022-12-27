@@ -28,4 +28,11 @@ extension RefExtensions on Ref {
     final db = read(pFirebase).ref(path);
     await db.set(value);
   }
+
+  Future<void> deleteDatabaseValue(
+    String path,
+  ) async {
+    final db = read(pFirebase).ref(path);
+    await db.set(null);
+  }
 }

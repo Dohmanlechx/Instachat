@@ -102,7 +102,9 @@ class __$$_ChatCopyWithImpl<$Res> extends _$ChatCopyWithImpl<$Res, _$_Chat>
 /// @nodoc
 @JsonSerializable()
 class _$_Chat implements _Chat {
-  _$_Chat({required this.id, required final Map<String, User> users})
+  _$_Chat(
+      {required this.id,
+      final Map<String, User> users = const <String, User>{}})
       : _users = users;
 
   factory _$_Chat.fromJson(Map<String, dynamic> json) => _$$_ChatFromJson(json);
@@ -111,6 +113,7 @@ class _$_Chat implements _Chat {
   final String id;
   final Map<String, User> _users;
   @override
+  @JsonKey()
   Map<String, User> get users {
     if (_users is EqualUnmodifiableMapView) return _users;
     // ignore: implicit_dynamic_type
@@ -151,9 +154,8 @@ class _$_Chat implements _Chat {
 }
 
 abstract class _Chat implements Chat {
-  factory _Chat(
-      {required final String id,
-      required final Map<String, User> users}) = _$_Chat;
+  factory _Chat({required final String id, final Map<String, User> users}) =
+      _$_Chat;
 
   factory _Chat.fromJson(Map<String, dynamic> json) = _$_Chat.fromJson;
 

@@ -55,7 +55,13 @@ class _ChatRepository extends GuardedRepository {
     final userId = ref.read(pUserId);
 
     return await guard(() async {
-      await ref.setDatabaseValue('chats/$chatId/users/$userId', null);
+      await ref.deleteDatabaseValue('chats/$chatId/users/$userId');
+
+      final chat = await fetch(chatId);
+
+      if (chat.users.isEmpty) {
+        await ref.deleteDatabaseValue('chats/$chatId');
+      }
     });
   }
 
