@@ -4,6 +4,9 @@ abstract class UI {
   // Theme data
   static final theme = ThemeData();
 
+  // Fonts
+  static const stereofidelic = TextStyle(fontFamily: 'Stereofidelic');
+
   // Colors
   static const primary = Color(0xFF593F62);
   static const secondary = Color(0xFFD3D0CB);

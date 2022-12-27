@@ -6,6 +6,7 @@ import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/screens/app_scaffold.dart';
 import 'package:instachat/screens/chat_screen.dart';
 import 'package:instachat/theme/ui.dart';
+import 'package:instachat/util/constants.dart';
 import 'package:instachat/util/extensions/context.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -42,6 +43,12 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Text(
+          Constants.appName,
+          style: UI.stereofidelic.copyWith(
+              fontSize: 100, color: const Color.fromARGB(255, 184, 123, 205)),
+        ),
+        const SizedBox(height: UI.p24),
         GestureDetector(
           onTap: () async {
             final navigator = Navigator.of(context);
@@ -60,13 +67,16 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
               width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: UI.secondary,
+                color: UI.chatbox,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(UI.p16),
                 child: Center(
                     child: Text('Start',
-                        style: Theme.of(context).textTheme.headline3)),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline3!
+                            .copyWith(color: Colors.black))),
               ),
             ),
           ),
@@ -129,13 +139,16 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
               width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: UI.secondary,
+                color: UI.myChatbox,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(UI.p16),
                 child: Center(
                     child: Text('Join',
-                        style: Theme.of(context).textTheme.headline3)),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline3!
+                            .copyWith(color: Colors.black))),
               ),
             ),
           ),
