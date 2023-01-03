@@ -52,8 +52,11 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_scrollController.hasClients) {
-            _scrollController
-                .jumpTo(_scrollController.position.maxScrollExtent);
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.ease,
+            );
           }
         });
       }
@@ -77,13 +80,20 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ChatUserName(widget.friend.name),
+            const SizedBox(height: UI.p8),
             Expanded(
               child: SingleChildScrollView(
                 controller: _scrollController,
-                child: Text(
-                  decrypted(_message),
-                  textAlign: TextAlign.start,
-                  style: Theme.of(context).textTheme.headline5,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        decrypted(_message),
+                        textAlign: TextAlign.start,
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
