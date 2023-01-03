@@ -43,11 +43,8 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          Constants.appName,
-          style: UI.stereofidelic.copyWith(
-              fontSize: 100, color: const Color.fromARGB(255, 184, 123, 205)),
-        ),
+        Text(Constants.appName,
+            style: UI.stereofidelic.copyWith(fontSize: 100, color: UI.accent)),
         const SizedBox(height: UI.p24),
         GestureDetector(
           onTap: () async {

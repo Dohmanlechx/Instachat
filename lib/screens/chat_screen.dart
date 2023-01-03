@@ -67,31 +67,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _content([Chat? chat]) {
-    final chatId = chat?.id;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         ..._chatBoxes(chat),
-        if (chatId != null) _chatId(chatId),
         _leaveButton(),
       ],
     );
   }
 
   Widget _chatId(String id) {
-    return Padding(
-      padding: const EdgeInsets.all(UI.p24),
-      child: GestureDetector(
-        onTap: () async {
-          await Clipboard.setData(ClipboardData(text: id)).then(
-            (_) => context.showSuccessSnackbar('Copied to clipboard!'),
-          );
-        },
-        child: Center(
-          child: Text(
-            'Chat ID: $id',
-            style: const TextStyle(fontSize: 30),
+    return GestureDetector(
+      onTap: () async {
+        await Clipboard.setData(ClipboardData(text: id)).then(
+          (_) => context.showSuccessSnackbar('Copied to clipboard!'),
+        );
+      },
+      child: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: UI.radius,
+            color: Colors.black.withOpacity(0.5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(UI.p8),
+            child: Text(id,
+                style: const TextStyle(fontSize: 30).copyWith(
+                  color: Colors.orange,
+                )),
           ),
         ),
       ),
@@ -121,6 +125,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   List<Widget> _chatBoxes(Chat? chat) {
+    final chatId = chat?.id;
     final userId = ref.read(pUser).id;
     final friendUsers = chat?.friendUsers(userId) ?? [];
     final friends = friendUsers.isEmpty ? null : friendUsers;
@@ -132,14 +137,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    CircularProgressIndicator(color: UI.secondary),
-                    SizedBox(height: UI.p16),
-                    Text(
-                      'Waiting for someone to connect...',
-                      style: TextStyle(color: UI.secondary),
-                    )
-                  ],
+                  children: chatId == null
+                      ? [const SizedBox()]
+                      : [
+                          Text(
+                            'Ask your friends to join the chat by this ID!',
+                            style: UI.regular30.copyWith(color: Colors.white),
+                          ),
+                          const SizedBox(height: UI.p8),
+                          _chatId(chatId),
+                        ],
                 ),
               ),
             )

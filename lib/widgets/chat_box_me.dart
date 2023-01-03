@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/user.dart';
 import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/theme/ui.dart';
+import 'package:instachat/widgets/chat_box.dart';
 import 'package:instachat/widgets/chat_user_name.dart';
 
 class MyChatBox extends ConsumerStatefulWidget {
@@ -48,20 +49,7 @@ class _MyChatBoxState extends ConsumerState<MyChatBox> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: UI.radius,
-        color: UI.myChatbox,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
+    return ChatBox(
       child: Padding(
         padding: const EdgeInsets.all(UI.p16),
         child: Column(

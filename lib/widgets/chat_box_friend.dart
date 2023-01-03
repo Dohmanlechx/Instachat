@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/user.dart';
 import 'package:instachat/providers/firebase.dart';
 import 'package:instachat/theme/ui.dart';
+import 'package:instachat/widgets/chat_box.dart';
 import 'package:instachat/widgets/chat_user_name.dart';
 
 class FriendChatBox extends ConsumerStatefulWidget {
@@ -56,19 +57,7 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: UI.radius,
-        color: UI.chatbox,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
+    return ChatBox(
       child: SingleChildScrollView(
         controller: _scrollController,
         child: Padding(

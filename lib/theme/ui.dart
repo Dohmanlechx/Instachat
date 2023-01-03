@@ -9,6 +9,7 @@ abstract class UI {
 
   // Colors
   static const primary = Color(0xFF593F62);
+  static const accent = Color.fromARGB(255, 184, 123, 205);
   static const secondary = Color(0xFFD3D0CB);
   static const chatbox = Color(0xFFE2C044);
   static const myChatbox = Color(0xFF7C9082);
