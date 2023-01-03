@@ -166,7 +166,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       child: SizedBox(
                         height: double.infinity,
                         child: FriendChatBox(
-                          key: ValueKey(friend),
+                          key: ValueKey(friend.id),
                           friend: friend,
                           chatId: widget.chatId,
                           isHost: widget.isAdmin,
