@@ -54,7 +54,7 @@ class _ChatRepository extends GuardedRepository {
   }
 
   Future<void> leave(String chatId) async {
-    final userId = ref.read(pUser);
+    final userId = ref.read(pUser).id;
 
     return await guard(() async {
       await ref.deleteDatabaseValue('chats/$chatId/users/$userId');
