@@ -5,11 +5,13 @@ class ChatBox extends StatelessWidget {
   const ChatBox({
     required this.child,
     required this.color,
+    this.controller,
     super.key,
   });
 
   final Widget child;
   final Color color;
+  final ScrollController? controller;
 
   @override
   Widget build(BuildContext context) {

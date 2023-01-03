@@ -58,14 +58,16 @@ class _MyChatBoxState extends ConsumerState<MyChatBox> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ChatUserName(widget.user.name),
-            TextField(
-              controller: _controller,
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              style: Theme.of(context).textTheme.headline5,
-              decoration: const InputDecoration(
-                hintText: 'Write something...',
-                border: InputBorder.none,
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                style: Theme.of(context).textTheme.headline5,
+                decoration: const InputDecoration(
+                  hintText: 'Write something...',
+                  border: InputBorder.none,
+                ),
               ),
             ),
           ],

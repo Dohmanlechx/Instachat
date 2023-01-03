@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/user.dart';
 import 'package:instachat/providers/firebase.dart';
 import 'package:instachat/theme/ui.dart';
+import 'package:instachat/util/encryption.dart';
 import 'package:instachat/widgets/chat_box.dart';
 import 'package:instachat/widgets/chat_user_name.dart';
 
@@ -42,10 +43,20 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
     databaseRef = messageFromHostRef;
 
     databaseRef.onValue.listen((event) {
-      setState(() {
-        var next = event.snapshot.value as String?;
-        _message = next ?? '';
-      });
+      final next = event.snapshot.value as String?;
+
+      if (next != null) {
+        setState(() {
+          _message = next;
+        });
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController
+                .jumpTo(_scrollController.position.maxScrollExtent);
+          }
+        });
+      }
     });
   }
 
@@ -59,22 +70,24 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
   Widget build(BuildContext context) {
     return ChatBox(
       color: UI.chatbox,
-      child: SingleChildScrollView(
-        controller: _scrollController,
-        child: Padding(
-          padding: const EdgeInsets.all(UI.p16),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ChatUserName(widget.friend.name),
-              Text(
-                _message,
-                textAlign: TextAlign.start,
-                style: Theme.of(context).textTheme.headline5,
+      child: Padding(
+        padding: const EdgeInsets.all(UI.p16),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ChatUserName(widget.friend.name),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Text(
+                  decrypted(_message),
+                  textAlign: TextAlign.start,
+                  style: Theme.of(context).textTheme.headline5,
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

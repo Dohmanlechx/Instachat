@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/chat.dart';
 import 'package:instachat/providers/user.dart';
 import 'package:instachat/repositories/guarded_repository.dart';
+import 'package:instachat/util/encryption.dart';
 import 'package:instachat/util/extensions/ref.dart';
 import 'package:instachat/words.dart' as file;
 
@@ -73,7 +74,9 @@ class _ChatRepository extends GuardedRepository {
   }) async {
     return await guard(() async {
       await ref.setDatabaseValue(
-          'chats/$chatId/users/$userId/message', message);
+        'chats/$chatId/users/$userId/message',
+        encrypted(message),
+      );
     });
   }
 }
