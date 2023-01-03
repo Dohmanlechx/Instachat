@@ -3,6 +3,11 @@ String randomizedId() {
   return shuffled.take(3).join('-');
 }
 
+String randomizeAnimal() {
+  final shuffled = List.of(animals)..shuffle();
+  return shuffled[0];
+}
+
 /// Lists 5000 top English words.
 ///
 /// The list is sorted in order of frequency of use, descending.

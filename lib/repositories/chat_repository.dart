@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instachat/models/chat.dart';
-import 'package:instachat/models/user.dart';
-import 'package:instachat/providers/user_id.dart';
+import 'package:instachat/providers/user.dart';
 import 'package:instachat/repositories/guarded_repository.dart';
 import 'package:instachat/util/extensions/ref.dart';
 import 'package:instachat/words.dart' as file;
@@ -33,8 +32,8 @@ class _ChatRepository extends GuardedRepository {
 
   Future<String> create() async {
     final chatId = file.randomizedId();
-    final userId = ref.read(pUserId);
-    final chat = Chat(id: chatId, users: {userId: User(id: userId)});
+    final user = ref.read(pUser);
+    final chat = Chat(id: chatId, users: {user.id: user});
 
     return await guard(() async {
       await ref.setDatabaseValue('chats/$chatId', chat.toJson());
@@ -43,16 +42,18 @@ class _ChatRepository extends GuardedRepository {
   }
 
   Future<void> join(String chatId) async {
-    final userId = ref.read(pUserId);
+    final user = ref.read(pUser);
 
     return await guard(() async {
-      final user = User(id: userId).toJson();
-      await ref.setDatabaseValue('chats/$chatId/users/$userId', user);
+      await ref.setDatabaseValue(
+        'chats/$chatId/users/${user.id}',
+        user.toJson(),
+      );
     });
   }
 
   Future<void> leave(String chatId) async {
-    final userId = ref.read(pUserId);
+    final userId = ref.read(pUser);
 
     return await guard(() async {
       await ref.deleteDatabaseValue('chats/$chatId/users/$userId');

@@ -7,6 +7,7 @@ part 'user.g.dart';
 class User with _$User {
   factory User({
     required String id,
+    required String name,
     String? message,
   }) = _User;
 

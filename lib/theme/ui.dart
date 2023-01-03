@@ -27,4 +27,6 @@ abstract class UI {
       TextStyle(fontSize: 30, fontWeight: FontWeight.normal);
   static const regular20 =
       TextStyle(fontSize: 20, fontWeight: FontWeight.normal);
+  static const bold30 = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const bold20 = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
 }

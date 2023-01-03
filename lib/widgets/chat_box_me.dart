@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:instachat/models/user.dart';
 import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/theme/ui.dart';
+import 'package:instachat/widgets/chat_user_name.dart';
 
 class MyChatBox extends ConsumerStatefulWidget {
   const MyChatBox({
-    required this.userId,
+    required this.user,
     required this.chatId,
     required this.isHost,
     super.key,
   });
 
-  final String userId;
+  final User user;
   final String chatId;
   final bool isHost;
 
@@ -32,7 +34,7 @@ class _MyChatBoxState extends ConsumerState<MyChatBox> {
 
         await ref.read(chatRepositoryProvider).updateMessage(
               widget.chatId,
-              widget.userId,
+              widget.user.id,
               message: value,
             );
       });
@@ -62,15 +64,22 @@ class _MyChatBoxState extends ConsumerState<MyChatBox> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(UI.p16),
-        child: TextField(
-          controller: _controller,
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          style: Theme.of(context).textTheme.headline5,
-          decoration: const InputDecoration(
-            hintText: 'Write something...',
-            border: InputBorder.none,
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ChatUserName(widget.user.name),
+            TextField(
+              controller: _controller,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              style: Theme.of(context).textTheme.headline5,
+              decoration: const InputDecoration(
+                hintText: 'Write something...',
+                border: InputBorder.none,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -7,7 +7,7 @@ import 'package:instachat/models/error_data.dart';
 import 'package:instachat/providers/app_exceptions.dart';
 import 'package:instachat/providers/chat.dart';
 import 'package:instachat/providers/firebase.dart';
-import 'package:instachat/providers/user_id.dart';
+import 'package:instachat/providers/user.dart';
 import 'package:instachat/repositories/chat_repository.dart';
 import 'package:instachat/screens/app_scaffold.dart';
 import 'package:instachat/theme/ui.dart';
@@ -121,9 +121,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   List<Widget> _chatBoxes(Chat? chat) {
-    final userId = ref.read(pUserId);
-    final friendUserIds = chat?.friendUserIds(userId) ?? [];
-    final friends = friendUserIds.isEmpty ? null : friendUserIds;
+    final userId = ref.read(pUser).id;
+    final friendUsers = chat?.friendUsers(userId) ?? [];
+    final friends = friendUsers.isEmpty ? null : friendUsers;
     const pd = UI.p8;
 
     return [
@@ -155,7 +155,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         height: double.infinity,
                         child: FriendChatBox(
                           key: ValueKey(friend),
-                          friendUserId: friend,
+                          friend: friend,
                           chatId: widget.chatId,
                           isHost: widget.isAdmin,
                         ),
@@ -170,7 +170,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: pd),
           child: MyChatBox(
-            userId: ref.read(pUserId),
+            user: ref.read(pUser),
             chatId: widget.chatId,
             isHost: widget.isAdmin,
           ),
