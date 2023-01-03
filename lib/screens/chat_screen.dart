@@ -31,6 +31,8 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
+  var _idCopiedToClipboard = false;
+
   DatabaseReference get usersRef =>
       ref.read(pFirebase).ref('chats/${widget.chatId}/users');
 
@@ -81,24 +83,41 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return GestureDetector(
       onTap: () async {
         await Clipboard.setData(ClipboardData(text: id)).then(
-          (_) => context.showSuccessSnackbar('Copied to clipboard!'),
+          (_) {
+            setState(() {
+              _idCopiedToClipboard = true;
+            });
+            context.showSuccessSnackbar('Copied to clipboard!');
+          },
         );
       },
       child: Center(
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.orange.withOpacity(0.5)),
-            borderRadius: UI.radius,
-            color: Colors.black.withOpacity(0.5),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(UI.p8),
-            child: Text(id,
-                style: const TextStyle(fontSize: 30).copyWith(
-                  fontFamily: 'Sono',
-                  color: Colors.orange,
-                )),
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                borderRadius: UI.radius,
+                color: Colors.black.withOpacity(0.5),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(UI.p8),
+                child: Text(id,
+                    style: const TextStyle(fontSize: 30).copyWith(
+                      fontFamily: 'Sono',
+                      color: Colors.orange,
+                    )),
+              ),
+            ),
+            const SizedBox(width: UI.p4),
+            Icon(
+              _idCopiedToClipboard
+                  ? Icons.assignment_turned_in_rounded
+                  : Icons.assignment_rounded,
+              size: 50.0,
+            ),
+          ],
         ),
       ),
     );
@@ -134,20 +153,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       friends == null
           ? Expanded(
               child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: chatId == null
-                      ? [const SizedBox()]
-                      : [
-                          Text(
-                            'Ask your friends to join the chat by this ID!',
-                            style: UI.regular30.copyWith(color: Colors.white),
-                          ),
-                          const SizedBox(height: UI.p8),
-                          _chatId(chatId),
-                        ],
-                ),
-              ),
+                  child: chatId == null ? const SizedBox() : _chatId(chatId)),
             )
           : Expanded(
               child: Row(
