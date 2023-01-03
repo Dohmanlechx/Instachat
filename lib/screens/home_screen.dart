@@ -19,8 +19,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _MyHomePageState extends ConsumerState<HomeScreen> {
-  bool host = true;
-
   late final ScrollController _scrollController;
   late final TextEditingController _idController;
 
@@ -53,7 +51,7 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
             await navigator.push(
               PageRouteBuilder(
                 pageBuilder: ((_, __, ___) =>
-                    ChatScreen(chatId: id, isAdmin: host)),
+                    ChatScreen(chatId: id, isAdmin: true)),
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
@@ -69,11 +67,14 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(UI.p16),
                 child: Center(
-                    child: Text('Start',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline3!
-                            .copyWith(color: Colors.black))),
+                  child: Text(
+                    'Start',
+                    style: UI.stereofidelic.copyWith(
+                      fontSize: 50,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -81,12 +82,10 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
         const SizedBox(height: UI.p16),
         GestureDetector(
           onTap: () async {
-            host = false;
             await showDialog(
               context: context,
               builder: ((context) {
                 return AlertDialog(
-                  title: const Text('TextField in Dialog'),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -94,9 +93,11 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
                         onChanged: (value) {},
                         controller: _idController,
                         decoration: const InputDecoration(
-                          hintText: "write the id here",
+                          hintText: "Paste the ID here!",
+                          border: InputBorder.none,
                         ),
                       ),
+                      const SizedBox(height: UI.p16),
                       GestureDetector(
                         onTap: () async {
                           Navigator.of(context).pop();
@@ -109,7 +110,7 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
                             PageRouteBuilder(
                               pageBuilder: ((_, __, ___) => ChatScreen(
                                     chatId: _idController.text,
-                                    isAdmin: host,
+                                    isAdmin: false,
                                   )),
                               transitionDuration: Duration.zero,
                               reverseTransitionDuration: Duration.zero,
@@ -118,10 +119,13 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
                         },
                         child: Container(
                           width: double.infinity,
-                          color: Colors.green,
+                          decoration: BoxDecoration(
+                            borderRadius: UI.radius,
+                            color: Colors.green,
+                          ),
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Center(child: Text('OK')),
+                            child: Center(child: Text('Join')),
                           ),
                         ),
                       )
@@ -141,11 +145,14 @@ class _MyHomePageState extends ConsumerState<HomeScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(UI.p16),
                 child: Center(
-                    child: Text('Join',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline3!
-                            .copyWith(color: Colors.black))),
+                  child: Text(
+                    'Join',
+                    style: UI.stereofidelic.copyWith(
+                      fontSize: 50,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

@@ -58,6 +58,7 @@ class _FriendChatBoxState extends ConsumerState<FriendChatBox> {
   @override
   Widget build(BuildContext context) {
     return ChatBox(
+      color: UI.chatbox,
       child: SingleChildScrollView(
         controller: _scrollController,
         child: Padding(

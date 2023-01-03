@@ -50,6 +50,7 @@ class _MyChatBoxState extends ConsumerState<MyChatBox> {
   @override
   Widget build(BuildContext context) {
     return ChatBox(
+      color: UI.myChatbox,
       child: Padding(
         padding: const EdgeInsets.all(UI.p16),
         child: Column(

@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:instachat/theme/ui.dart';
 
 class ChatBox extends StatelessWidget {
-  const ChatBox({required this.child, super.key});
+  const ChatBox({
+    required this.child,
+    required this.color,
+    super.key,
+  });
 
   final Widget child;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: UI.radius,
-        color: UI.chatbox,
+        color: color,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
