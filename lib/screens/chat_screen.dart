@@ -71,6 +71,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         ..._chatBoxes(chat),
+        const SizedBox(height: UI.p24),
         _leaveButton(),
       ],
     );
@@ -86,7 +87,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       child: Center(
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
+            border: Border.all(color: Colors.orange.withOpacity(0.5)),
             borderRadius: UI.radius,
             color: Colors.black.withOpacity(0.5),
           ),
@@ -94,6 +95,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             padding: const EdgeInsets.all(UI.p8),
             child: Text(id,
                 style: const TextStyle(fontSize: 30).copyWith(
+                  fontFamily: 'Sono',
                   color: Colors.orange,
                 )),
           ),
@@ -110,14 +112,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         navigator.pop();
       },
       child: Align(
-        alignment: Alignment.bottomRight,
+        alignment: Alignment.bottomCenter,
         child: Container(
-          width: 100,
+          width: 200,
           height: 50,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4.0),
-            color: Colors.red,
-          ),
+          decoration: BoxDecoration(borderRadius: UI.radius, color: Colors.red),
           child: const Icon(Icons.phone_disabled_sharp),
         ),
       ),

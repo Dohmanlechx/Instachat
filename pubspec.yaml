@@ -35,3 +35,6 @@ flutter:
     - family: Stereofidelic
       fonts:
         - asset: assets/fonts/stereofidelic.ttf
+    - family: Sono
+      fonts:
+        - asset: assets/fonts/sono.ttf
