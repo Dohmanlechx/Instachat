@@ -21,18 +21,23 @@ class _ChatRepository extends GuardedRepository {
     });
   }
 
-  Future<Chat> fetch(String chatId) async {
+  Future<Chat?> fetch(String chatId) async {
     return await guard(() async {
       final chatData = await ref.getDatabaseValue('chats/$chatId');
 
-      return chatData == null
-          ? throw Exception('No chat found!')
-          : Chat.fromJson(chatData);
+      return chatData == null ? null : Chat.fromJson(chatData);
     });
   }
 
   Future<String> create() async {
-    final chatId = file.randomizedId();
+    String chatId;
+    List<Chat> allChats;
+
+    do {
+      allChats = await fetchAll();
+      chatId = file.randomizedId();
+    } while (allChats.any((chat) => chat.id == chatId));
+
     final user = ref.read(pUser);
     final chat = Chat(id: chatId, users: {user.id: user});
 
@@ -61,7 +66,7 @@ class _ChatRepository extends GuardedRepository {
 
       final chat = await fetch(chatId);
 
-      if (chat.users.isEmpty) {
+      if (chat?.users.isEmpty ?? false) {
         await ref.deleteDatabaseValue('chats/$chatId');
       }
     });
