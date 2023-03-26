@@ -156,7 +156,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   child: chatId == null ? const SizedBox() : _chatId(chatId)),
             )
           : Expanded(
-              child: Row(
+              flex: 5,
+              child: Column(
                 children: List.generate(friends.length, (i) {
                   final friend = friends[i];
 
@@ -179,6 +180,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
       const SizedBox(height: pd),
       Expanded(
+        flex: 2,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: pd),
           child: MyChatBox(
