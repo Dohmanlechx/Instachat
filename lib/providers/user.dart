@@ -12,7 +12,7 @@ class UserNotifier extends StateNotifier<User> {
       : super(
           User(
             id: const Uuid().v4(),
-            name: randomizeAnimal(),
+            name: '${randomizeColor()} ${randomizeAnimal()}',
           ),
         );
 
